@@ -15,6 +15,11 @@
 
     <div class="py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {{--
+                Happy path: groene succesmelding na toevoegen/wijzigen/verwijderen.
+                De 'transition-opacity duration-500' klasse laat het blok soepel uitfaden;
+                het JavaScript onderaan start die fade na 4 seconden.
+            --}}
             @if (session('success'))
                 <div id="successFlashMessage" class="mb-4 rounded-md border border-green-200 bg-green-50 p-4 text-green-800 transition-opacity duration-500">
                     {{ session('success') }}
@@ -168,7 +173,9 @@
             codeInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
         }
 
-        // Vervangt browser-validatie met een custom melding binnen de modal.
+        // Unhappy path (verwijderen): het formulier heeft 'novalidate', zodat de standaard
+        // HTML5-browserballon niet verschijnt. We vangen de submit zelf af en tonen bij een
+        // verkeerde invoer een rode foutmelding BINNEN de modal in plaats van te versturen.
         document.getElementById('deleteForm').addEventListener('submit', function (event) {
             const codeInput = document.getElementById('bevestigingscode');
             const errorBox = document.getElementById('deleteModalError');

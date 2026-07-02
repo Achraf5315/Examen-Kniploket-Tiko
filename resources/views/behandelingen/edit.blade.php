@@ -8,6 +8,34 @@
     <div class="py-10">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+                {{--
+                    Rode foutmelding bij een mislukte opslag (bijv. een databasefout in de
+                    stored procedure). Zonder dit blok zou de pagina stil terugkeren en lijkt
+                    het alsof er "niets gebeurt". session('error') wordt door de controller gezet.
+                --}}
+                @if (session('error'))
+                    <div class="mb-5 rounded-md border border-red-200 bg-red-50 p-4 text-red-800">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                {{--
+                    Rood validatie-blok bovenaan het formulier (unhappy path).
+                    Toont álle server-side validatiefouten in het Nederlands, zodat de gebruiker
+                    in één oogopslag ziet wat er mis is. $errors is altijd beschikbaar in Blade.
+                --}}
+                @if ($errors->any())
+                    <div class="mb-5 rounded-md border border-red-200 bg-red-50 p-4 text-red-800">
+                        <p class="font-semibold">Er ging iets mis. Controleer de volgende punten:</p>
+                        <ul class="mt-2 list-disc pl-5 text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                {{-- POST-formulier met @method('PUT') zodat de resource-route update() aanroept. --}}
                 <form method="POST" action="{{ route('behandelingen.update', $behandeling->Id) }}" class="space-y-5">
                     @csrf
                     @method('PUT')
@@ -37,7 +65,8 @@
                             type="number"
                             required
                             min="0"
-                            max="9999.99"
+                            {{-- Maximaal 3 cijfers voor de komma: 999.99. HTML5-limiet naast de server-side check. --}}
+                            max="999.99"
                             step="0.01"
                             value="{{ old('Prijs', $behandeling->Prijs) }}"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -55,7 +84,8 @@
                             type="number"
                             required
                             min="1"
-                            max="600"
+                            {{-- Maximaal 3 cijfers in totaal: 999 minuten. HTML5-limiet naast de server-side check. --}}
+                            max="999"
                             step="1"
                             value="{{ old('DuurMinuten', $behandeling->DuurMinuten) }}"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"

@@ -21,11 +21,23 @@ class User extends Authenticatable
 
     protected $primaryKey = 'Id';
 
+    // Standaardwaarde voor IsActief, zodat een nieuwe gebruiker altijd actief begint.
+    // Dit voorkomt een NOT NULL-fout wanneer IsActief niet expliciet wordt meegegeven.
     protected $attributes = [
         'IsActief' => true,
     ];
 
+    // Mass-assignment whitelist.
+    // De PascalCase-kolommen (Gebruikersnaam/Email/Wachtwoord/IsActief) staan hier expliciet in,
+    // zodat je via Tinker rechtstreeks een gebruiker kunt aanmaken zonder "geen default value"-crash:
+    //   User::create(['Gebruikersnaam' => 'admin', 'Email' => 'a@b.nl', 'Wachtwoord' => 'geheim']);
+    // De aliassen name/email/password blijven meegaan voor de standaard Laravel-authenticatie
+    // (de accessors hieronder mappen die naar de juiste PascalCase-kolommen).
     protected $fillable = [
+        'Gebruikersnaam',
+        'Email',
+        'Wachtwoord',
+        'IsActief',
         'name',
         'email',
         'password',
