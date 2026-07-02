@@ -4,9 +4,10 @@ use App\Http\Controllers\AfspraakController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// Homepagina van Kniploket Tiko (conform de wireframe)
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
