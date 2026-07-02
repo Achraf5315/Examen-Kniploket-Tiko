@@ -1,44 +1,17 @@
-{{-- Dashboard voor ingelogde gebruikers: snelkoppelingen naar de beheeronderdelen --}}
-@extends('layouts.kniploket')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
-@section('titel', 'Dashboard - Kniploket Tiko')
-
-@section('inhoud')
-<div class="container py-4">
-    <h1 class="h3 mb-4">Dashboard</h1>
-
-    <div class="row g-4">
-        {{-- Afspraken: onderdeel van de Afspraak user stories --}}
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h2 class="h5 card-title">Afspraken</h2>
-                    <p class="card-text text-secondary">Bekijk, voeg toe, wijzig of verwijder afspraken.</p>
-                    <a href="{{ route('afspraken.index') }}" class="btn btn-dark">Afspraken</a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Behandelingen en Producten worden door teamgenoten gebouwd --}}
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h2 class="h5 card-title">Behandelingen</h2>
-                    <p class="card-text text-secondary">Beheer het aanbod van behandelingen.</p>
-                    <a href="#" class="btn btn-outline-secondary disabled" aria-disabled="true">Behandelingen</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h2 class="h5 card-title">Producten</h2>
-                    <p class="card-text text-secondary">Beheer de producten en de voorraad.</p>
-                    <a href="#" class="btn btn-outline-secondary disabled" aria-disabled="true">Producten</a>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("You're logged in!") }}
                 </div>
             </div>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>
