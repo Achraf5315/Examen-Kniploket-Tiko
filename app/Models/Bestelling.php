@@ -51,6 +51,11 @@ class Bestelling extends TikoModel
         );
     }
 
+    public function deleteBestelling(int $id): void
+    {
+        DB::select('CALL sp_DeleteBestelling(?)', [$id]);
+    }
+
     public function findBestellingById(int $id)
     {
         return DB::selectOne('CALL sp_findBestellingById(?)', [$id]);
