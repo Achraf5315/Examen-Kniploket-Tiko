@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Bestelling extends TikoModel
 {
@@ -12,6 +13,11 @@ class Bestelling extends TikoModel
     use HasFactory;
 
     protected $table = 'Bestelling';
+
+    public function getAllBestellingen()
+    {
+        return DB::select('CALL GetAllBestellingen()');
+    }
 
     public function product(): BelongsTo
     {
