@@ -23,15 +23,22 @@
 
             <div class="collapse navbar-collapse" id="hoofdNavigatie">
                 <ul class="navbar-nav ms-auto me-lg-4">
-                    {{-- Behandelingen en Producten worden door teamgenoten gebouwd --}}
-                    <li class="nav-item"><a class="nav-link" href="{{ route('behandelingen.index') }}">Behandelingen</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
-
-                    @if (Route::has('afspraken.create'))
-                        <li class="nav-item"><a class="nav-link" href="{{ route('afspraken.create') }}">Afspraak maken</a></li>
-                    @endif
-
                     @auth
+                        @php
+                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
+                        @endphp
+
+                        @if ($heeftAfsprakenRol)
+                            @if (Route::has('behandelingen.index'))
+                                <li class="nav-item"><a class="nav-link" href="{{ route('behandelingen.index') }}">Behandelingen</a></li>
+                            @endif
+                            <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
+
+                            @if (Route::has('afspraken.create'))
+                                <li class="nav-item"><a class="nav-link" href="{{ route('afspraken.create') }}">Afspraak maken</a></li>
+                            @endif
+                        @endif
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
                     @endauth
                 </ul>
@@ -54,14 +61,14 @@
     {{-- Terugkoppeling naar de eindgebruiker: succes- en foutmeldingen bovenaan iedere pagina --}}
     <div class="container mt-3">
         @if (session('succes'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show js-auto-dismiss-alert" role="alert">
                 {{ session('succes') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sluiten"></button>
             </div>
         @endif
 
         @if (session('fout'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show js-auto-dismiss-alert" role="alert">
                 {{ session('fout') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sluiten"></button>
             </div>
@@ -89,5 +96,14 @@
 
     {{-- Bootstrap JavaScript (nodig voor het sluiten van meldingen en het mobiele menu) --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.js-auto-dismiss-alert').forEach(function (alertElement) {
+                window.setTimeout(function () {
+                    bootstrap.Alert.getOrCreateInstance(alertElement).close();
+                }, 5000);
+            });
+        });
+    </script>
 </body>
 </html>

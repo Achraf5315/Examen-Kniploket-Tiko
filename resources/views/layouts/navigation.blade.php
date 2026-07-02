@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ auth()->check() ? route('dashboard') : route('home') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
@@ -15,6 +15,21 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    @auth
+                        @php
+                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
+                        @endphp
+
+                        @if ($heeftAfsprakenRol)
+                            <x-nav-link :href="route('afspraken.index')" :active="request()->routeIs('afspraken.*')">
+                                {{ __('Afspraken') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('behandelingen.index')" :active="request()->routeIs('behandelingen.*')">
+                                {{ __('Behandelingen') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
@@ -70,6 +85,21 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+                @auth
+                    @php
+                        $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
+                    @endphp
+
+                    @if ($heeftAfsprakenRol)
+                        <x-responsive-nav-link :href="route('afspraken.index')" :active="request()->routeIs('afspraken.*')">
+                            {{ __('Afspraken') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('behandelingen.index')" :active="request()->routeIs('behandelingen.*')">
+                            {{ __('Behandelingen') }}
+                        </x-responsive-nav-link>
+                    @endif
+                @endauth
         </div>
 
         <!-- Responsive Settings Options -->
