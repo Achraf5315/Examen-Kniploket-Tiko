@@ -24,7 +24,7 @@
             <div class="collapse navbar-collapse" id="hoofdNavigatie">
                 <ul class="navbar-nav ms-auto me-lg-4">
                     {{-- Behandelingen en Producten worden door teamgenoten gebouwd --}}
-                    <li class="nav-item"><a class="nav-link" href="#">Behandelingen</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('behandelingen.index') }}">Behandelingen</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
 
                     @if (Route::has('afspraken.create'))
