@@ -9,6 +9,17 @@
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
                 {{--
+                    Rode foutmelding bij een mislukte opslag (bijv. een databasefout in de
+                    stored procedure). Zonder dit blok zou de pagina stil terugkeren en lijkt
+                    het alsof er "niets gebeurt". session('error') wordt door de controller gezet.
+                --}}
+                @if (session('error'))
+                    <div class="mb-5 rounded-md border border-red-200 bg-red-50 p-4 text-red-800">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                {{--
                     Rood validatie-blok bovenaan het formulier (unhappy path).
                     Toont álle server-side validatiefouten in het Nederlands, zodat de gebruiker
                     in één oogopslag ziet wat er mis is. $errors is altijd beschikbaar in Blade.
