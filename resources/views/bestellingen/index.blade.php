@@ -3,7 +3,11 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("Bestellingen Overzicht") }}
+                    <div class="mb-4">Bestellingen Overzicht</div>
+                    <a href="{{ route('bestellingen.create') }}"
+                        class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                        Nieuwe bestelling toevoegen
+                    </a>
                 </div>
                 <table class="w-full border border-gray-200 border-separate font-semibold mb-0 align-middle">
                     <thead>
@@ -50,24 +54,15 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle">
                                     @php
-                                        if($bestelling->Status == 'In behandeling')
-                                        {
+                                        if ($bestelling->Status == 'In behandeling') {
                                             echo '<span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-900">In behandeling</span>';
-                                        }
-                                        elseif($bestelling->Status == 'Verzonden')
-                                        {
+                                        } elseif ($bestelling->Status == 'Verzonden') {
                                             echo '<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">Verzonden</span>';
-                                        }
-                                        elseif($bestelling->Status == 'Geleverd')
-                                        {
+                                        } elseif ($bestelling->Status == 'Geleverd') {
                                             echo '<span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Geleverd</span>';
-                                        }
-                                        elseif($bestelling->Status == 'Nieuw')
-                                        {
+                                        } elseif ($bestelling->Status == 'Nieuw') {
                                             echo '<span class="bg-purple-100 text-purple-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-purple-200 dark:text-purple-900">Nieuw</span>';
-                                        }
-                                        elseif($bestelling->Status == 'Geannuleerd')
-                                        {
+                                        } elseif ($bestelling->Status == 'Geannuleerd') {
                                             echo '<span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">Geannuleerd</span>';
                                         }
                                     @endphp

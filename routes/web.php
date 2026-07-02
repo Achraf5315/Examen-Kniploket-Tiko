@@ -16,8 +16,13 @@ Route::get('/bestellingen', [BestellingController::class, 'index'])
 ->name('bestellingen.index') 
 ->middleware(['auth', 'verified']);
 
+Route::get('/bestellingen/create', [BestellingController::class, 'create'])
+->name('bestellingen.create')
+->middleware(['auth', 'verified']);
 
-
+Route::post('/bestellingen', [BestellingController::class, 'store'])
+->name('bestellingen.store')
+->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

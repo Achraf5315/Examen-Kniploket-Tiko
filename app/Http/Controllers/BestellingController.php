@@ -30,4 +30,9 @@ class BestellingController extends Controller
             'bestellingen' => $bestellingen,
         ]);
     }
+
+    public function create()
+    {
+        return view('bestellingen.create');
+    }
 }
