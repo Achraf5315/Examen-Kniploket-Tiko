@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Models\Bestelling;
+use Illuminate\Support\Facades\Log;
 
 class BestellingController extends Controller
 {
@@ -14,20 +13,21 @@ class BestellingController extends Controller
     {
         $this->bestelling = $bestelling;
     }
-    
+
     public function index()
     {
         try {
             $bestellingen = $this->bestelling->getAllBestellingen();
-            Log::info('Bestelling opgehaald: ' . json_encode($bestellingen));
+
+            Log::info('Bestelling opgehaald', ['bestellingen' => $bestellingen]);
         } catch (\Exception $e) {
-            // Handle the exception, e.g., log it or return an error response
-            Log::error('Error met het ophalen van bestellingen: ' . $e->getMessage());
-            return response()->json(['error' => 'Error met het ophalen van bestellingen ' . $e->getMessage()], 500);
+
+            Log::error('Fout bij het ophalen van bestellingen: ' . $e->getMessage());
+            $bestellingen = [];
         }
 
         return view('bestellingen.index', [
-            'bestellingen' => $bestellingen
+            'bestellingen' => $bestellingen,
         ]);
     }
 }

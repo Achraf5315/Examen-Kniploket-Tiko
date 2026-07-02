@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             'DatumAangemaakt' => now(),
             'DatumGewijzigd' => now(),
         ]);
-        $this->call(DummyDataSeeder::class);
+        
+        // $this->call(DummyDataSeeder::class);
     }
 }
