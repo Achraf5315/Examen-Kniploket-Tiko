@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -51,8 +50,17 @@ class User extends Authenticatable
             'IsActief' => 'boolean',
             'DatumAangemaakt' => 'datetime',
             'DatumGewijzigd' => 'datetime',
+            'email_verified_at' => 'datetime',
             'Wachtwoord' => 'hashed',
         ];
+    }
+
+    protected function id(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, array $attributes) => $attributes['Id'] ?? null,
+            set: fn ($value) => ['Id' => $value],
+        );
     }
 
     protected function name(): Attribute
@@ -76,6 +84,14 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn ($value, array $attributes) => $attributes['Wachtwoord'] ?? null,
             set: fn ($value) => ['Wachtwoord' => $value],
+        );
+    }
+
+    protected function emailVerifiedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, array $attributes) => $attributes['EmailGeverifieerdOp'] ?? null,
+            set: fn ($value) => ['EmailGeverifieerdOp' => $value],
         );
     }
 
