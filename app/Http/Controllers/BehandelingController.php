@@ -42,11 +42,16 @@ class BehandelingController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Server-side validatie als extra beveiligingslaag naast HTML5 validatie.
+        // Technische log: markeer de start van een toevoeg-poging voor traceerbaarheid.
+        Log::info('Start toevoegen behandeling', ['ip' => $request->ip()]);
+
+        // Server-side validatie als extra beveiligingslaag naast de HTML5 validatie.
+        // Prijs: maximaal 3 cijfers voor de komma (max 999.99) om de DECIMAL(6,2)-kolom te beschermen.
+        // DuurMinuten: maximaal 3 cijfers in totaal (max 999) zodat de duur nooit overloopt.
         $validated = $request->validate([
             'Naam' => ['required', 'string', 'max:100', 'unique:Behandeling,Naam'],
-            'Prijs' => ['required', 'numeric', 'min:0', 'max:9999.99'],
-            'DuurMinuten' => ['required', 'integer', 'min:1', 'max:600'],
+            'Prijs' => ['required', 'numeric', 'min:0', 'max:999.99'],
+            'DuurMinuten' => ['required', 'integer', 'min:1', 'max:999'],
             'Opmerking' => ['nullable', 'string', 'max:255'],
             'Producten' => ['nullable', 'array'],
             'Producten.*' => ['integer', 'distinct', 'exists:Product,Id'],
@@ -78,6 +83,12 @@ class BehandelingController extends Controller
                 $validated['Opmerking'] ?? null,
                 $productId
             );
+
+            // Technische log: bevestig de geslaagde insert inclusief gekoppeld product.
+            Log::info('Behandeling toegevoegd', [
+                'naam' => $validated['Naam'],
+                'product_id' => $productId,
+            ]);
 
             return redirect()
                 ->route('behandelingen.index')
@@ -123,11 +134,15 @@ class BehandelingController extends Controller
      */
     public function update(Request $request, Behandeling $behandeling): RedirectResponse
     {
+        // Technische log: markeer de start van een wijzig-poging voor traceerbaarheid.
+        Log::info('Start wijzigen behandeling', ['behandeling_id' => $behandeling->Id]);
+
         // Validatie met unieke naam, waarbij de huidige record wordt uitgesloten.
+        // Zelfde limieten als bij toevoegen: Prijs max 999.99 (3 cijfers), DuurMinuten max 999.
         $validated = $request->validate([
             'Naam' => ['required', 'string', 'max:100', 'unique:Behandeling,Naam,' . $behandeling->Id . ',Id'],
-            'Prijs' => ['required', 'numeric', 'min:0', 'max:9999.99'],
-            'DuurMinuten' => ['required', 'integer', 'min:1', 'max:600'],
+            'Prijs' => ['required', 'numeric', 'min:0', 'max:999.99'],
+            'DuurMinuten' => ['required', 'integer', 'min:1', 'max:999'],
             'Opmerking' => ['nullable', 'string', 'max:255'],
             'Producten' => ['nullable', 'array'],
             'Producten.*' => ['integer', 'distinct', 'exists:Product,Id'],
@@ -148,6 +163,12 @@ class BehandelingController extends Controller
                 $validated['Opmerking'] ?? null,
                 $productId
             );
+
+            // Technische log: bevestig de geslaagde update.
+            Log::info('Behandeling gewijzigd', [
+                'behandeling_id' => $behandeling->Id,
+                'product_id' => $productId,
+            ]);
 
             return redirect()
                 ->route('behandelingen.index')
@@ -185,6 +206,9 @@ class BehandelingController extends Controller
 
         try {
             Behandeling::deleteViaProcedure((int) $behandeling->Id);
+
+            // Technische log: bevestig de geslaagde (soft-)delete.
+            Log::info('Behandeling verwijderd', ['behandeling_id' => $behandeling->Id]);
 
             return redirect()
                 ->route('behandelingen.index')
