@@ -59,7 +59,6 @@
                         placeholder="bijv. 8717185223412"
                         pattern="[0-9]{8,14}"
                         required
-                        @change="validateEanCode"
                     />
                     <p class="text-gray-600 dark:text-gray-400 text-xs mt-1">
                         EAN-codes moeten uit 8 tot 14 cijfers bestaan
@@ -244,28 +243,6 @@
 </div>
  
 <script>
-    // Client-side validatie
-    document.getElementById('EanCode').addEventListener('blur', async function() {
-        if (this.value.length >= 8 && this.value.length <= 14) {
-            // Validatie met server
-            try {
-                const response = await fetch(`/api/products/check-ean/${this.value}`);
-                const data = await response.json();
-                
-                if (!data.available) {
-                    this.classList.add('border-red-500');
-                    document.querySelector('[for="EanCode"]').insertAdjacentHTML('afterend', 
-                        '<p class="text-red-500 text-sm mt-1">Deze EAN-code bestaat al</p>'
-                    );
-                } else {
-                    this.classList.remove('border-red-500');
-                }
-            } catch (error) {
-                console.error('Error checking EAN:', error);
-            }
-        }
-    });
- 
     // Voorraad validatie
     document.getElementById('MinimumVoorraad').addEventListener('change', function() {
         const voorraad = parseInt(document.getElementById('Voorraad').value);
