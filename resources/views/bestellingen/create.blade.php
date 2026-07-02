@@ -11,16 +11,21 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg">
                         <div>
                             <label class="block mb-1 text-sm font-medium text-gray-700">Product</label>
-                            <select name="ProductNaam" class="w-full rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <select name="ProductNaam"
+                                class="w-full rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">Selecteer product</option>
                                 @if(isset($producten) && count($producten))
                                     @foreach($producten as $product)
-                                        <option value="{{ $product->id }}">{{ $product->Productnaam }}</option>
+                                        <option value="{{ $product->Id }}" @selected(old('ProductNaam') == $product->Id)>
+                                            {{ $product->Productnaam }}</option>
                                     @endforeach
                                 @else
                                     <option value="product-1">Geen producten gevonden</option>
                                 @endif
                             </select>
+                            @error('ProductNaam')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
@@ -30,35 +35,50 @@
                                 <option value="">Selecteer klant</option>
                                 @if(isset($klanten) && count($klanten))
                                     @foreach($klanten as $klant)
-                                        <option value="{{ $klant->id }}">{{ $klant->Naam}}</option>
+                                        <option value="{{ $klant->Id }}" @selected(old('KlantNaam') == $klant->Id)>
+                                            {{ $klant->Naam}}</option>
                                     @endforeach
                                 @else
                                     <option value="klant-1">Geen klanten gevonden</option>
                                 @endif
                             </select>
+                            @error('KlantNaam')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
                             <label class="block mb-1 text-sm font-medium text-gray-700">Orderdatum</label>
-                            <input type="date" name="Orderdatum]"
+                            <input type="date" name="Orderdatum" min="{{ date('Y-m-d') }}"
+                                value="{{ old('Orderdatum') }}"
                                 class="w-full rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                            @error('Orderdatum')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
                             <label class="block mb-1 text-sm font-medium text-gray-700">Verwachte leverdatum</label>
-                            <input type="date" name="VerwachteLeverdatum]"
+                            <input type="date" name="VerwachteLeverdatum" min="{{ date('Y-m-d') }}"
+                                value="{{ old('VerwachteLeverdatum') }}"
                                 class="w-full rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                            @error('VerwachteLeverdatum')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="md:col-span-2">
                             <label class="block mb-1 text-sm font-medium text-gray-700">Status</label>
-                            <select name="Status]"
+                            <select name="Status"
                                 class="w-full rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                option value="">Selecteer status</option>
+                                <option value="">Selecteer status</option>
                                 @foreach ($statuses as $status)
-                                    <option value="{{ $status }}">{{ $status }}</option>
+                                    <option value="{{ $status }}" @selected(old('Status') == $status)>{{ $status }}</option>
                                 @endforeach
                             </select>
+                            @error('Status')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                     <div>

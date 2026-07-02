@@ -19,6 +19,20 @@ class Bestelling extends TikoModel
         return DB::select('CALL sp_GetAllBestellingen()');
     }
 
+    public function createBestelling(array $data): void
+    {
+        DB::statement(
+            'CALL sp_CreateBestelling(?, ?, ?, ?, ?)',
+            [
+                $data['ProductNaam'],
+                $data['KlantNaam'],
+                $data['Orderdatum'],
+                $data['VerwachteLeverdatum'],
+                $data['Status'],
+            ]
+        );
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'ProductId', 'Id');

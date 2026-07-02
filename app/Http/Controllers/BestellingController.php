@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bestelling;
 use App\Models\Klant;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class BestellingController extends Controller
@@ -36,12 +37,27 @@ class BestellingController extends Controller
     public function create()
     {
         // Haal alleen producten en klanten op voor het aanmaken van een bestelling
-        $producten = Product::select('Productnaam')->get();
-        $klanten = Klant::select('Naam')->get();
+        $producten = Product::select('Id', 'Productnaam')->get();
+        $klanten = Klant::select('Id', 'Naam')->get();
 
         return view('bestellingen.create', [
             'producten' => $producten,
             'klanten' => $klanten,
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'ProductNaam' => 'required|exists:Product,Id',
+            'KlantNaam' => 'required|exists:Klant,Id',
+            'Orderdatum' => 'required|date',
+            'VerwachteLeverdatum' => 'required|date',
+            'Status' => 'required|string|max:30',
+        ]);
+
+        $this->bestelling->createBestelling($validatedData);
+
+        return redirect()->route('bestellingen.index')->with('success', 'Bestelling opgeslagen.');
     }
 }
