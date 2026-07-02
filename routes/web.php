@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,16 +17,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
 Route::middleware(['auth'])->group(function () {
-    Route::resource('products', App\Http\Controllers\ProductController::class);
-    
-    Route::prefix('api/products')->group(function () {
-        Route::get('check-ean/{eanCode}', 
-            [App\Http\Controllers\ProductController::class, 'checkEanCode'])
-            ->name('products.check-ean');
-        Route::get('low-stock', 
-            [App\Http\Controllers\ProductController::class, 'getLowStockProducts'])
-            ->name('products.low-stock');
-    });
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 });
 require __DIR__.'/auth.php';

@@ -1,10 +1,10 @@
 <?php
- 
+
 namespace App\Http\Requests;
- 
+
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
- 
+
 /**
  * UpdateProductRequest
  * 
@@ -22,10 +22,11 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Controleer of gebruiker het recht heeft producten bij te werken
-        return auth()->check() && auth()->user()->can('update', $this->route('product'));
+        // TODO: vervang door auth()->user()->can('update', $this->route('product'))
+        // zodra er een ProductPolicy is aangemaakt en geregistreerd.
+        return $this->user() !== null;
     }
- 
+
     /**
      * Definiëert de validatieregels voor het product formulier
      * 
@@ -34,7 +35,7 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         $productId = $this->route('product')->Id;
- 
+
         return [
             'Productnaam' => [
                 'required',
@@ -74,7 +75,6 @@ class UpdateProductRequest extends FormRequest
                 'integer',
                 'min:0',
                 'max:99999',
-                'lte:Voorraad',
             ],
             'Opmerking' => [
                 'nullable',
@@ -91,7 +91,7 @@ class UpdateProductRequest extends FormRequest
             ],
         ];
     }
- 
+
     /**
      * Geeft aangepaste validatie foutmeldingen
      * 
@@ -117,11 +117,10 @@ class UpdateProductRequest extends FormRequest
             'Voorraad.min' => 'Voorraad kan niet negatief zijn.',
             'MinimumVoorraad.required' => 'Minimumvoorraad is verplicht.',
             'MinimumVoorraad.integer' => 'Minimumvoorraad moet een geheel getal zijn.',
-            'MinimumVoorraad.lte' => 'Minimumvoorraad mag niet hoger zijn dan de huidige voorraad.',
             'leveranciers.*.exists' => 'Een geselecteerde leverancier bestaat niet.',
         ];
     }
- 
+
     /**
      * Bereidt de data voor validatie voor
      * 
@@ -130,9 +129,9 @@ class UpdateProductRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge([
-            'Productnaam' => trim($this->input('Productnaam')),
-            'EanCode' => preg_replace('/\s+/', '', $this->input('EanCode')),
-            'Opmerking' => trim($this->input('Opmerking')),
+            'Productnaam' => trim($this->input('Productnaam', '')),
+            'EanCode' => preg_replace('/\s+/', '', $this->input('EanCode', '')),
+            'Opmerking' => $this->input('Opmerking') ? trim($this->input('Opmerking')) : null,
         ]);
     }
 }

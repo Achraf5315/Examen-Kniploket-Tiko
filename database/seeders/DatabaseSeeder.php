@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         // eigenaar account
         User::create([
             'Gebruikersnaam' => 'Eigenaar',
-            'Email' => 'eigenaar@tiko.com',
+            'Email' => 'egeinaar@tiko.com',
             'Wachtwoord' => Hash::make('achraf123'),
             'IsActief' => true,
             'DatumAangemaakt' => now(),

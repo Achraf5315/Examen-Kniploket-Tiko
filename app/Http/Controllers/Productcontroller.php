@@ -1,7 +1,7 @@
 <?php
  
 namespace App\Http\Controllers;
- 
+ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Categorie;
 use App\Models\Leverancier;
@@ -26,20 +26,72 @@ class ProductController extends Controller
      * 
      * @return \Illuminate\View\View
      */
-    public function index()
-    {
-        try {
-            return view('products.index');
-        } catch (\Exception $e) {
-            Log::error('Error loading product index: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-            
-            return redirect()->route('dashboard')
-                ->with('error', 'Er is een fout opgetreden bij het laden van de producten.');
+  public function index(Request $request)
+{
+    try {
+        $search = trim((string) $request->query('search', ''));
+        $selectedCategory = $request->query('category', '');
+        $showLowStockOnly = $request->boolean('low_stock');
+        $sortBy = $request->query('sort', 'Productnaam');
+        $sortDirection = $request->query('direction', 'asc');
+
+        // Whitelist sortable columns to prevent SQL injection via query string
+        $allowedSorts = ['Productnaam', 'EanCode', 'Prijs', 'Voorraad'];
+        if (!in_array($sortBy, $allowedSorts, true)) {
+            $sortBy = 'Productnaam';
         }
+        if (!in_array($sortDirection, ['asc', 'desc'], true)) {
+            $sortDirection = 'asc';
+        }
+
+        $query = Product::query()
+            ->where('IsActief', true)
+            ->with(['categorie', 'leveranciers']);
+
+        if ($search !== '') {
+            $searchTerm = '%' . $search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('Productnaam', 'LIKE', $searchTerm)
+                  ->orWhere('EanCode', 'LIKE', $searchTerm)
+                  ->orWhere('Opmerking', 'LIKE', $searchTerm);
+            });
+        }
+
+        if ($selectedCategory !== '') {
+            $query->where('CategorieId', $selectedCategory);
+        }
+
+        if ($showLowStockOnly) {
+            $query->whereRaw('Voorraad <= MinimumVoorraad');
+        }
+
+        $query->orderBy($sortBy, $sortDirection);
+
+        $products = $query->paginate(15)->withQueryString();
+
+        $categories = Categorie::where('IsActief', true)
+            ->orderBy('Naam')
+            ->get();
+
+        return view('products.index', [
+            'products' => $products,
+            'categories' => $categories,
+            'search' => $search,
+            'selectedCategory' => $selectedCategory,
+            'showLowStockOnly' => $showLowStockOnly,
+            'sortBy' => $sortBy,
+            'sortDirection' => $sortDirection,
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error loading product index: ' . $e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+
+        return redirect()->route('dashboard')
+            ->with('error', 'Er is een fout opgetreden bij het laden van de producten.');
     }
+}
  
     /**
      * Geeft het formulier voor het aanmaken van een nieuw product
@@ -76,54 +128,51 @@ class ProductController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreProductRequest $request)
-    {
-        DB::beginTransaction();
-        
-        try {
-            // Validatie is al gedaan in StoreProductRequest
-            $validatedData = $request->validated();
- 
-            // Maak het product aan
-            $product = Product::create([
-                'Productnaam' => $validatedData['Productnaam'],
-                'EanCode' => $validatedData['EanCode'],
-                'CategorieId' => $validatedData['CategorieId'],
-                'Prijs' => $validatedData['Prijs'],
-                'Voorraad' => $validatedData['Voorraad'],
-                'MinimumVoorraad' => $validatedData['MinimumVoorraad'],
-                'IsActief' => true,
-                'Opmerking' => $validatedData['Opmerking'] ?? null,
-            ]);
- 
-            // Voeg leveranciers toe als deze geselecteerd zijn
-            if (!empty($validatedData['leveranciers'])) {
-                $product->leveranciers()->attach($validatedData['leveranciers']);
-            }
- 
-            DB::commit();
- 
-            Log::info('Product aangemaakt', [
-                'product_id' => $product->Id,
-                'product_name' => $product->Productnaam,
-                'user_id' => auth()->id(),
-            ]);
- 
-            return redirect()->route('products.index')
-                ->with('success', "Product '{$product->Productnaam}' is succesvol aangemaakt.");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            Log::error('Error creating product: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'user_id' => auth()->id(),
-            ]);
- 
-            return redirect()->back()
-                ->with('error', 'Er is een fout opgetreden bij het aanmaken van het product.')
-                ->withInput();
-        }
+{
+    try {
+        $validatedData = $request->validated();
+
+        $leveranciersString = !empty($validatedData['leveranciers'])
+            ? implode(',', $validatedData['leveranciers'])
+            : '';
+
+        DB::statement('CALL sp_CreateProduct(?, ?, ?, ?, ?, ?, ?, ?)', [
+            $validatedData['Productnaam'],
+            $validatedData['EanCode'],
+            $validatedData['CategorieId'],
+            $validatedData['Prijs'],
+            $validatedData['Voorraad'],
+            $validatedData['MinimumVoorraad'],
+            $validatedData['Opmerking'] ?? null,
+            $leveranciersString,
+        ]);
+
+        $product = Product::where('EanCode', $validatedData['EanCode'])->latest('Id')->first();
+
+        Log::info('Product aangemaakt via sp_CreateProduct', [
+            'product_id' => $product->Id ?? null,
+            'product_name' => $validatedData['Productnaam'],
+            'user_id' => auth()->id(),
+        ]);
+
+        return redirect()->route('products.index')
+            ->with('success', "Product '{$validatedData['Productnaam']}' is succesvol aangemaakt.");
+    } catch (\Exception $e) {
+        Log::error('Error creating product: ' . $e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'user_id' => auth()->id(),
+        ]);
+
+        $message = str_contains($e->getMessage(), 'SQLSTATE[45000]')
+            ? preg_replace('/^.*45000\]:\s*/', '', $e->getMessage())
+            : 'Er is een fout opgetreden bij het aanmaken van het product.';
+
+        return redirect()->back()
+            ->with('error', $message)
+            ->withInput();
     }
+}
  
     /**
      * Geeft het formulier voor het bewerken van een product

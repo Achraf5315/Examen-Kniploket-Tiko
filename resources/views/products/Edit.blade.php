@@ -128,7 +128,7 @@
                             <strong>Huidige voorraad:</strong> {{ $product->Voorraad }} stuks
                             @if($product->Voorraad <= $product->MinimumVoorraad)
                                 <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
-                                    ⚠ Lage voorraad
+                                    ⚠ Voorraad te laag
                                 </span>
                             @endif
                         </p>
@@ -173,7 +173,7 @@
                                 required
                             />
                             <p class="text-gray-600 dark:text-gray-400 text-xs mt-1">
-                                Bij dit aantal wordt een waarschuwing gegeven
+                                Bij een voorraad onder dit aantal krijg je een waarschuwing
                             </p>
                             @error('MinimumVoorraad')
                                 <p class="text-red-500 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
@@ -280,7 +280,7 @@
         
         if (minimum > voorraad) {
             this.classList.add('border-yellow-500');
-            alert('Let op: Minimumvoorraad is hoger dan huidige voorraad');
+            alert('Let op: voorraad is te laag, vul het aan.');
         } else {
             this.classList.remove('border-yellow-500');
         }
