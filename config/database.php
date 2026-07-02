@@ -58,7 +58,10 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
-            'engine' => null,
+            // Forceer InnoDB in plaats van de server-default engine (die hier MyISAM/Aria is
+            // met een 1000-byte indexlimiet). InnoDB geeft een grotere indexlimiet én is
+            // écht transactioneel, wat de stored procedures (START TRANSACTION/COMMIT) nodig hebben.
+            'engine' => env('DB_ENGINE', 'InnoDB'),
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
