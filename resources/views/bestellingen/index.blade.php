@@ -1,18 +1,18 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="mb-4">Bestellingen Overzicht</div>
                     <a href="{{ route('bestellingen.create') }}"
-                        class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 active:bg-blue-700 disabled:opacity-25 transition">
                         Nieuwe bestelling toevoegen
                     </a>
                 </div>
 
                 @if(session('success'))
                     <div
-                        class="mx-2 p-3 text-sm text-green-800 bg-green-100 border border-green-300 rounded-lg dark:bg-green-900 dark:text-green-100 dark:border-green-700">
+                        class="mx-2 p-3 text-sm text-green-800 bg-green-100 border border-green-300 rounded-lg dark:bg-green-900/30 dark:text-green-200 dark:border-green-700">
                         {{ session('success') }}
                         <meta http-equiv="refresh" content="5;url={{ route('bestellingen.index') }}">
                     </div>
@@ -20,41 +20,42 @@
 
                 @if (session('error'))
                     <div
-                        class="mx-2 p-3 text-sm text-red-800 bg-red-100 border border-red-300 rounded-lg dark:bg-red-900 dark:text-red-100 dark:border-red-700">
+                        class="mx-2 p-3 text-sm text-red-800 bg-red-100 border border-red-300 rounded-lg dark:bg-red-900/30 dark:text-red-200 dark:border-red-700">
                         {{ session('error') }}
                         <meta http-equiv="refresh" content="5;url={{ route('bestellingen.index') }}">
                     </div>
                 @endif
 
-                <table class="w-full border border-gray-200 border-separate font-semibold mb-0 align-middle">
+                <div class="overflow-x-auto">
+                <table class="w-full border border-gray-200 dark:border-gray-700 border-separate border-spacing-0 font-semibold mb-0 align-middle bg-white dark:bg-gray-800">
                     <thead>
                         <tr>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                class="bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
                                 Product
                             </th>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                class="bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
                                 Klant
                             </th>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                class="bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
                                 Orderdatum
                             </th>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                class="bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
                                 Verwachte Leverdatum
                             </th>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                class="bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600">
                                 Status
                             </th>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 text-center">
+                                class="bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600 text-center">
                                 Wijzigen
                             </th>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 text-center">
+                                class="bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider border-b border-gray-200 dark:border-gray-600 text-center">
                                 Verwijderen
                             </th>
                         </tr>
@@ -65,41 +66,41 @@
                                 $productNaam = $bestelling->ProductNaam ?? $bestelling->Productnaam ?? '';
                                 $klantNaam = $bestelling->KlantNaam ?? $bestelling->Klantnaam ?? '';
                             @endphp
-                            <tr class="hover:bg-gray-50">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                 <td
-                                    class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
+                                    class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 border-t border-gray-100 dark:border-gray-700 align-middle whitespace-nowrap">
                                     {{ $productNaam }}
                                 </td>
                                 <td
-                                    class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
+                                    class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 border-t border-gray-100 dark:border-gray-700 align-middle whitespace-nowrap">
                                     {{ $klantNaam }}
                                 </td>
                                 <td
-                                    class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
+                                    class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 border-t border-gray-100 dark:border-gray-700 align-middle whitespace-nowrap">
                                     {{ $bestelling->Orderdatum }}
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle">
+                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-100 dark:border-gray-700 align-middle">
                                     {{ $bestelling->VerwachteLeverdatum }}
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle">
+                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-100 dark:border-gray-700 align-middle">
                                     @php
                                         if ($bestelling->Status == 'In behandeling') {
-                                            echo '<span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-900">In behandeling</span>';
+                                            echo '<span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-400/20 dark:text-yellow-300">In behandeling</span>';
                                         } elseif ($bestelling->Status == 'Verzonden') {
-                                            echo '<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">Verzonden</span>';
+                                            echo '<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-400/20 dark:text-blue-300">Verzonden</span>';
                                         } elseif ($bestelling->Status == 'Geleverd') {
-                                            echo '<span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Geleverd</span>';
+                                            echo '<span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-400/20 dark:text-green-300">Geleverd</span>';
                                         } elseif ($bestelling->Status == 'Nieuw') {
-                                            echo '<span class="bg-purple-100 text-purple-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-purple-200 dark:text-purple-900">Nieuw</span>';
+                                            echo '<span class="bg-purple-100 text-purple-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-purple-400/20 dark:text-purple-300">Nieuw</span>';
                                         } elseif ($bestelling->Status == 'Geannuleerd') {
-                                            echo '<span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">Geannuleerd</span>';
+                                            echo '<span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-400/20 dark:text-red-300">Geannuleerd</span>';
                                         }
                                     @endphp
                                 </td>
                                 <td
-                                    class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle text-center">
+                                    class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-100 dark:border-gray-700 align-middle text-center">
                                     <a href="{{ route('bestellingen.edit', $bestelling->Id) }}"
-                                        class="inline-flex items-center justify-center text-blue-600 hover:text-blue-900">
+                                        class="inline-flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round">
@@ -108,10 +109,10 @@
                                         </svg>
                                     </a>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle text-center"
+                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-100 dark:border-gray-700 align-middle text-center"
                                     x-data="{ openDeleteModal: false }">
                                     <button type="button"
-                                        class="inline-flex items-center justify-center text-red-600 hover:text-red-900"
+                                        class="inline-flex items-center justify-center text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                                         @click="openDeleteModal = true">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -126,20 +127,20 @@
                                     </button>
 
                                     <div x-show="openDeleteModal" x-transition.opacity
-                                        class="fixed inset-0 z-40 bg-black/40" @click="openDeleteModal = false"></div>
+                                        class="fixed inset-0 z-40 bg-black/40 dark:bg-black/60" @click="openDeleteModal = false"></div>
 
                                     <div x-show="openDeleteModal" x-transition
                                         class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                                        <div class="w-full max-w-sm rounded-lg bg-white p-6 shadow-xl"
+                                        <div class="w-full max-w-sm rounded-lg bg-white dark:bg-gray-800 p-6 shadow-xl border border-gray-200 dark:border-gray-700"
                                             @click.away="openDeleteModal = false">
-                                            <h3 class="text-lg font-semibold text-gray-900">Bestelling verwijderen?</h3>
-                                            <p class="mt-2 text-sm text-gray-600">
+                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Bestelling verwijderen?</h3>
+                                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                                 Deze actie kan je niet ongedaan maken.
                                             </p>
 
                                             <div class="mt-5 flex items-center justify-end gap-3">
                                                 <button type="button"
-                                                    class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                                    class="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                     @click="openDeleteModal = false">
                                                     Annuleren
                                                 </button>
@@ -149,7 +150,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                        class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">
+                                                        class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800">
                                                         VERWIJDEREN
                                                     </button>
                                                 </form>
@@ -160,8 +161,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8">
-                                    <div class="bg-amber-50 text-amber-700 text-center p-3">
+                                <td colspan="8" class="border-t border-gray-100 dark:border-gray-700">
+                                    <div class="bg-amber-50 text-amber-700 dark:bg-amber-400/10 dark:text-amber-200 text-center p-3">
                                         Er zijn geen bestellingen om te tonen.
                                     </div>
                                 </td>
@@ -169,6 +170,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
