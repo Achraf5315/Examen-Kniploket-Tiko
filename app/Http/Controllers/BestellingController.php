@@ -187,5 +187,22 @@ class BestellingController extends Controller
         return redirect()->route('bestellingen.index');
     }
 
+    public function destroy($id)
+    {
+        // Probeer de bestelling te verwijderen en log eventuele fouten
+        try {
+            $this->bestelling->deleteBestelling($id);
+            Log::info('Bestelling verwijderd', ['bestelling_id' => $id]);
+        } catch (\Exception $e) {
+            Log::error('Fout bij het verwijderen van bestelling: '.$e->getMessage());
+
+            return redirect()->back()->with('error', 'Er is een fout opgetreden bij het verwijderen van de bestelling.');
+        }
+
+        // Redirect naar de indexpagina met een succesbericht
+        session()->flash('success', 'Bestelling verwijderd.');
+
+        return redirect()->route('bestellingen.index');
+    }
     
 }

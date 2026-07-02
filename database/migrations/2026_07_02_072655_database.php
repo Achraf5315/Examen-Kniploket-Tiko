@@ -23,9 +23,8 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker');
+            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker')->onDelete('cascade');
         });
-        
 
         // 3. Adres
         Schema::create('Adres', function (Blueprint $table) {
@@ -40,7 +39,7 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('KlantId')->references('Id')->on('Klant');
+            $table->foreign('KlantId')->references('Id')->on('Klant')->onDelete('cascade');
         });
 
         // 4. Categorie
@@ -77,7 +76,7 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('CategorieId')->references('Id')->on('Categorie');
+            $table->foreign('CategorieId')->references('Id')->on('Categorie')->onDelete('cascade');
         });
 
         // 7. ProductPerLeverancier
@@ -89,8 +88,8 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('ProductId')->references('Id')->on('Product');
-            $table->foreign('LeverancierId')->references('Id')->on('Leverancier');
+            $table->foreign('ProductId')->references('Id')->on('Product')->onDelete('cascade');
+            $table->foreign('LeverancierId')->references('Id')->on('Leverancier')->onDelete('cascade');
         });
 
         // 8. Behandeling
@@ -115,8 +114,8 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('BehandelingId')->references('Id')->on('Behandeling');
-            $table->foreign('ProductId')->references('Id')->on('Product');
+            $table->foreign('BehandelingId')->references('Id')->on('Behandeling')->onDelete('cascade');
+            $table->foreign('ProductId')->references('Id')->on('Product')->onDelete('cascade');
         });
 
         // 10. Medewerker
@@ -131,8 +130,8 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker');
-            $table->foreign('AdresId')->references('Id')->on('Adres');
+            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker')->onDelete('cascade');
+            $table->foreign('AdresId')->references('Id')->on('Adres')->onDelete('cascade');
         });
 
         // 11. MedewerkerPerBehandeling
@@ -144,8 +143,8 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker');
-            $table->foreign('BehandelingId')->references('Id')->on('Behandeling');
+            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker')->onDelete('cascade');
+            $table->foreign('BehandelingId')->references('Id')->on('Behandeling')->onDelete('cascade');
         });
 
         // 12. Werktijd
@@ -159,7 +158,7 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker');
+            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker')->onDelete('cascade');
         });
 
         // 13. Afspraak
@@ -175,9 +174,9 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('KlantId')->references('Id')->on('Klant');
-            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker');
-            $table->foreign('BehandelingId')->references('Id')->on('Behandeling');
+            $table->foreign('KlantId')->references('Id')->on('Klant')->onDelete('cascade');
+            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker')->onDelete('cascade');
+            $table->foreign('BehandelingId')->references('Id')->on('Behandeling')->onDelete('cascade');
         });
 
         // 14. Bestelling
@@ -192,8 +191,8 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('ProductId')->references('Id')->on('Product');
-            $table->foreign('KlantId')->references('Id')->on('Klant');
+            $table->foreign('ProductId')->references('Id')->on('Product')->onDelete('cascade');
+            $table->foreign('KlantId')->references('Id')->on('Klant')->onDelete('cascade');
         });
 
         // 15. Bestelregel
@@ -206,7 +205,7 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('BestellingId')->references('Id')->on('Bestelling');
+            $table->foreign('BestellingId')->references('Id')->on('Bestelling')->onDelete('cascade');
         });
     }
 
