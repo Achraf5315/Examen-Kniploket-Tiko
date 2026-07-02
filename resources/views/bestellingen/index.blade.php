@@ -10,63 +10,67 @@
                         <tr>
                             <th
                                 class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Factuurnummer
+                                Product
                             </th>
                             <th
                                 class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Bedrag
+                                Klant
                             </th>
                             <th
                                 class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Betaalmethode
+                                Orderdatum
                             </th>
                             <th
                                 class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Transactie-referentie
+                                Verwachte Leverdatum
                             </th>
                             <th
                                 class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                                 Status
                             </th>
-                            <th
-                                class="bg-gray-50 px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Actief
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($payments as $payment)
+                        @forelse($bestellingen as $bestelling)
                             <tr class="hover:bg-gray-50">
                                 <td
                                     class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
-                                    {{ $payment->InvoiceNumber }}
+                                    {{ $bestelling->ProductNaam }}
                                 </td>
                                 <td
                                     class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
-                                    €{{ number_format($payment->Amount, 2) }}</td>
+                                    {{ $bestelling->KlantNaam }}
+                                </td>
                                 <td
                                     class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
-                                    {{ $payment->Method }}
+                                    {{ $bestelling->Orderdatum }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle">
-                                    <span
-                                        class="truncate max-w-[240px] inline-block align-middle">{{ $payment->TransactionRef }}</span>
+                                    {{ $bestelling->VerwachteLeverdatum }}
                                 </td>
-                                <td class="px-4 py-3 text-sm border-t border-gray-100 align-middle">
+                                <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle">
                                     @php
-                                        $status = $paymentStatusLabels[$payment->Status] ?? [
-                                            'label' => $payment->Status,
-                                            'class' => 'bg-gray-100 text-gray-800',
-                                        ];
+                                        if($bestelling->Status == 'In behandeling')
+                                        {
+                                            echo '<span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-900">In behandeling</span>';
+                                        }
+                                        elseif($bestelling->Status == 'Verzonden')
+                                        {
+                                            echo '<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">Verzonden</span>';
+                                        }
+                                        elseif($bestelling->Status == 'Geleverd')
+                                        {
+                                            echo '<span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Geleverd</span>';
+                                        }
+                                        elseif($bestelling->Status == 'Nieuw')
+                                        {
+                                            echo '<span class="bg-purple-100 text-purple-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-purple-200 dark:text-purple-900">Nieuw</span>';
+                                        }
+                                        elseif($bestelling->Status == 'Geannuleerd')
+                                        {
+                                            echo '<span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">Geannuleerd</span>';
+                                        }
                                     @endphp
-                                    <span
-                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $status['class'] }}">
-                                        {{ $status['label'] }}
-                                    </span>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle text-center whitespace-nowrap">
-                                    {{ $payment->IsActive ? 'Ja' : 'Nee' }}
                                 </td>
                             </tr>
                         @empty

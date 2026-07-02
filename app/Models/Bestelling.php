@@ -16,7 +16,7 @@ class Bestelling extends TikoModel
 
     public function getAllBestellingen()
     {
-        return DB::select('CALL GetAllBestellingen()');
+        return DB::select('CALL sp_GetAllBestellingen()');
     }
 
     public function product(): BelongsTo
