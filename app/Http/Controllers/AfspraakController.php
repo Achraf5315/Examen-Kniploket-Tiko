@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AfspraakToevoegenRequest;
+use App\Http\Requests\AfspraakWijzigenRequest;
 use App\Models\Afspraak;
 use App\Models\Behandeling;
 use App\Models\Klant;
@@ -158,6 +159,115 @@ class AfspraakController extends Controller
     }
 
     /**
+     * Toont het formulier voor het wijzigen van een afspraak (Update).
+     */
+    public function edit(int $id): View|RedirectResponse
+    {
+        try {
+            // Haal de afspraak op via de stored procedure spAfspraakDetails
+            $afspraak = Afspraak::getAfspraakById($id);
+
+            if ($afspraak === null) {
+                Log::warning('Afspraak niet gevonden bij het openen van het wijzigformulier.', [
+                    'afspraak_id' => $id,
+                ]);
+
+                return redirect()
+                    ->route('afspraken.index')
+                    ->with('fout', 'De afspraak is niet gevonden.');
+            }
+
+            // Keuzelijsten voor het formulier: alleen actieve klanten, medewerkers en behandelingen
+            $klanten = Klant::where('IsActief', 1)->orderBy('Naam')->get();
+            $medewerkers = Medewerker::where('IsActief', 1)->orderBy('Naam')->get();
+            $behandelingen = Behandeling::where('IsActief', 1)->orderBy('Naam')->get();
+
+            Log::info('Formulier afspraak wijzigen geopend.', ['afspraak_id' => $id]);
+
+            return view('Afspraak.Wijzigen', [
+                'afspraak' => $afspraak,
+                'klanten' => $klanten,
+                'medewerkers' => $medewerkers,
+                'behandelingen' => $behandelingen,
+            ]);
+        } catch (Throwable $fout) {
+            Log::error('Formulier afspraak wijzigen kan niet worden geladen.', [
+                'afspraak_id' => $id,
+                'foutmelding' => $fout->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('afspraken.index')
+                ->with('fout', 'Het formulier kan niet worden geladen. Probeer het later opnieuw.');
+        }
+    }
+
+    /**
+     * Slaat de wijzigingen van een afspraak op via de stored procedure (Update).
+     *
+     * De validatie gebeurt in AfspraakWijzigenRequest; de overlapcontrole
+     * gebeurt in de stored procedure spAfspraakWijzigen.
+     */
+    public function update(AfspraakWijzigenRequest $request, int $id): RedirectResponse
+    {
+        try {
+            // Wijzig de afspraak via het model (stored procedure)
+            Afspraak::updateAfspraak($id, $request->validated());
+
+            Log::info('Afspraak succesvol gewijzigd.', [
+                'afspraak_id' => $id,
+                'gebruiker_id' => $request->user()?->Id,
+            ]);
+
+            // Terugkoppeling naar de eindgebruiker via een flash-melding
+            return redirect()
+                ->route('afspraken.index')
+                ->with('succes', 'De afspraak is succesvol gewijzigd.');
+        } catch (QueryException $fout) {
+            // Scenario: de gewijzigde afspraak overlapt met een bestaande afspraak
+            if ($this->isOverlapFout($fout)) {
+                Log::warning('Afspraak wijzigen geweigerd: overlap met een bestaande afspraak.', [
+                    'afspraak_id' => $id,
+                    'invoer' => $request->validated(),
+                ]);
+
+                return back()
+                    ->withInput()
+                    ->with('fout', 'De afspraak overlapt met een bestaande afspraak.');
+            }
+
+            // De afspraak bestaat niet (meer): terug naar het overzicht met een melding
+            if ($this->isNietGevondenFout($fout)) {
+                Log::warning('Afspraak wijzigen mislukt: afspraak niet gevonden.', [
+                    'afspraak_id' => $id,
+                ]);
+
+                return redirect()
+                    ->route('afspraken.index')
+                    ->with('fout', 'De afspraak is niet gevonden.');
+            }
+
+            Log::error('Databasefout bij het wijzigen van een afspraak.', [
+                'afspraak_id' => $id,
+                'foutmelding' => $fout->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('fout', 'De wijzigingen kunnen niet worden opgeslagen. Probeer het later opnieuw.');
+        } catch (Throwable $fout) {
+            Log::error('Onverwachte fout bij het wijzigen van een afspraak.', [
+                'afspraak_id' => $id,
+                'foutmelding' => $fout->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('fout', 'De wijzigingen kunnen niet worden opgeslagen. Probeer het later opnieuw.');
+        }
+    }
+
+    /**
      * Controleert of de databasefout een overlapmelding uit de stored procedure is.
      *
      * MySQL geeft foutcode 1644 (ER_SIGNAL_EXCEPTION) wanneer een stored procedure
@@ -167,5 +277,14 @@ class AfspraakController extends Controller
     {
         return ($fout->errorInfo[1] ?? null) === 1644
             && str_contains($fout->getMessage(), 'overlapt');
+    }
+
+    /**
+     * Controleert of de databasefout een 'niet gevonden'-melding uit de stored procedure is.
+     */
+    private function isNietGevondenFout(QueryException $fout): bool
+    {
+        return ($fout->errorInfo[1] ?? null) === 1644
+            && str_contains($fout->getMessage(), 'niet gevonden');
     }
 }

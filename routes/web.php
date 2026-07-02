@@ -27,6 +27,10 @@ Route::middleware(['auth', 'rol:Admin,Medewerker'])->group(function () {
     // Afspraak toevoegen (Create): formulier tonen en opslaan
     Route::get('/afspraken/toevoegen', [AfspraakController::class, 'create'])->name('afspraken.create');
     Route::post('/afspraken', [AfspraakController::class, 'store'])->name('afspraken.store');
+
+    // Afspraak wijzigen (Update): formulier tonen en opslaan
+    Route::get('/afspraken/{id}/wijzigen', [AfspraakController::class, 'edit'])->whereNumber('id')->name('afspraken.edit');
+    Route::put('/afspraken/{id}', [AfspraakController::class, 'update'])->whereNumber('id')->name('afspraken.update');
 });
 
 require __DIR__.'/auth.php';
