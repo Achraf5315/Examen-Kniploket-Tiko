@@ -165,6 +165,7 @@ class BestellingController extends Controller
             return redirect()->back();
         }
 
+        // Controleer of de bestelling al is geleverd of verzonden, zo ja, geef een foutmelding en redirect terug
         if($bestelling->Status === 'Geleverd' || $validatedData['Status'] === 'Verzonden') {
             session()->flash('error', 'Een bestelling die al is geleverd of verzonden kan niet worden gewijzigd');
             return redirect()->back();
@@ -185,4 +186,6 @@ class BestellingController extends Controller
 
         return redirect()->route('bestellingen.index');
     }
+
+    
 }
