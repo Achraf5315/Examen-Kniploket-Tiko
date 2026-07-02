@@ -77,4 +77,46 @@ class Afspraak extends TikoModel
 
         return $nieuwId;
     }
+
+    /**
+     * Haalt één afspraak op via de stored procedure spAfspraakDetails.
+     *
+     * De stored procedure bevat JOINs met Klant, Medewerker en Behandeling,
+     * zodat het wijzigformulier vooraf ingevuld kan worden.
+     *
+     * @return object|null De afspraak, of null wanneer die niet bestaat
+     */
+    public static function getAfspraakById(int $id): ?object
+    {
+        Log::debug('Stored procedure spAfspraakDetails wordt aangeroepen.', ['afspraak_id' => $id]);
+
+        $resultaat = DB::select('CALL spAfspraakDetails(?)', [$id]);
+
+        return $resultaat[0] ?? null;
+    }
+
+    /**
+     * Wijzigt een bestaande afspraak via de stored procedure spAfspraakWijzigen.
+     *
+     * De stored procedure controleert zelf (met een JOIN op Behandeling) of de
+     * gewijzigde afspraak overlapt met een andere afspraak van dezelfde medewerker.
+     * Bij overlap gooit MySQL een SIGNAL-fout die als QueryException terugkomt.
+     *
+     * @param  array<string, mixed>  $gegevens  De gevalideerde formuliergegevens
+     */
+    public static function updateAfspraak(int $id, array $gegevens): void
+    {
+        Log::debug('Stored procedure spAfspraakWijzigen wordt aangeroepen.', ['afspraak_id' => $id]);
+
+        DB::statement('CALL spAfspraakWijzigen(?, ?, ?, ?, ?, ?)', [
+            $id,
+            $gegevens['KlantId'],
+            $gegevens['MedewerkerId'],
+            $gegevens['BehandelingId'],
+            $gegevens['Datum'],
+            $gegevens['Starttijd'],
+        ]);
+
+        Log::info('Afspraak gewijzigd via stored procedure.', ['afspraak_id' => $id]);
+    }
 }
