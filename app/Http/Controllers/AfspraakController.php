@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AfspraakToevoegenRequest;
+use App\Http\Requests\AfspraakVerwijderenRequest;
 use App\Http\Requests\AfspraakWijzigenRequest;
 use App\Models\Afspraak;
 use App\Models\Behandeling;
@@ -264,6 +265,91 @@ class AfspraakController extends Controller
             return back()
                 ->withInput()
                 ->with('fout', 'De wijzigingen kunnen niet worden opgeslagen. Probeer het later opnieuw.');
+        }
+    }
+
+    /**
+     * Toont de bevestigingspagina voor het verwijderen van een afspraak (Delete).
+     */
+    public function delete(int $id): View|RedirectResponse
+    {
+        try {
+            // Haal de afspraak op zodat de gebruiker ziet wat er verwijderd wordt
+            $afspraak = Afspraak::getAfspraakById($id);
+
+            if ($afspraak === null) {
+                Log::warning('Afspraak niet gevonden bij het openen van de verwijderpagina.', [
+                    'afspraak_id' => $id,
+                ]);
+
+                return redirect()
+                    ->route('afspraken.index')
+                    ->with('fout', 'De afspraak is niet gevonden.');
+            }
+
+            Log::info('Bevestigingspagina afspraak verwijderen geopend.', ['afspraak_id' => $id]);
+
+            return view('Afspraak.Verwijderen', ['afspraak' => $afspraak]);
+        } catch (Throwable $fout) {
+            Log::error('Verwijderpagina kan niet worden geladen.', [
+                'afspraak_id' => $id,
+                'foutmelding' => $fout->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('afspraken.index')
+                ->with('fout', 'De pagina kan niet worden geladen. Probeer het later opnieuw.');
+        }
+    }
+
+    /**
+     * Verwijdert een afspraak definitief via de stored procedure (Delete).
+     *
+     * De AfspraakVerwijderenRequest controleert eerst of de gebruiker het
+     * bevestigingswoord VERWIJDEREN juist heeft ingetypt.
+     */
+    public function destroy(AfspraakVerwijderenRequest $request, int $id): RedirectResponse
+    {
+        try {
+            // Verwijder de afspraak via het model (stored procedure)
+            Afspraak::deleteAfspraak($id);
+
+            Log::info('Afspraak succesvol verwijderd.', [
+                'afspraak_id' => $id,
+                'gebruiker_id' => $request->user()?->Id,
+            ]);
+
+            // Terugkoppeling naar de eindgebruiker via een flash-melding
+            return redirect()
+                ->route('afspraken.index')
+                ->with('succes', 'De afspraak is succesvol verwijderd.');
+        } catch (QueryException $fout) {
+            // De afspraak bestaat niet (meer): terug naar het overzicht met een melding
+            if ($this->isNietGevondenFout($fout)) {
+                Log::warning('Afspraak verwijderen mislukt: afspraak niet gevonden.', [
+                    'afspraak_id' => $id,
+                ]);
+
+                return redirect()
+                    ->route('afspraken.index')
+                    ->with('fout', 'De afspraak is niet gevonden.');
+            }
+
+            Log::error('Databasefout bij het verwijderen van een afspraak.', [
+                'afspraak_id' => $id,
+                'foutmelding' => $fout->getMessage(),
+            ]);
+
+            return back()
+                ->with('fout', 'De afspraak kan niet worden verwijderd. Probeer het later opnieuw.');
+        } catch (Throwable $fout) {
+            Log::error('Onverwachte fout bij het verwijderen van een afspraak.', [
+                'afspraak_id' => $id,
+                'foutmelding' => $fout->getMessage(),
+            ]);
+
+            return back()
+                ->with('fout', 'De afspraak kan niet worden verwijderd. Probeer het later opnieuw.');
         }
     }
 

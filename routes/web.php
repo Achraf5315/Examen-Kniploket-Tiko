@@ -31,6 +31,10 @@ Route::middleware(['auth', 'rol:Admin,Medewerker'])->group(function () {
     // Afspraak wijzigen (Update): formulier tonen en opslaan
     Route::get('/afspraken/{id}/wijzigen', [AfspraakController::class, 'edit'])->whereNumber('id')->name('afspraken.edit');
     Route::put('/afspraken/{id}', [AfspraakController::class, 'update'])->whereNumber('id')->name('afspraken.update');
+
+    // Afspraak verwijderen (Delete): bevestigingspagina tonen en definitief verwijderen
+    Route::get('/afspraken/{id}/verwijderen', [AfspraakController::class, 'delete'])->whereNumber('id')->name('afspraken.delete');
+    Route::delete('/afspraken/{id}', [AfspraakController::class, 'destroy'])->whereNumber('id')->name('afspraken.destroy');
 });
 
 require __DIR__.'/auth.php';
