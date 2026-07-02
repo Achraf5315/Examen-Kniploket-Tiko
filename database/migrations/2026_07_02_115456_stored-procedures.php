@@ -12,6 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // DROP IF EXISTS voor idempotentie in RefreshDatabase (tests).
+        DB::unprepared('DROP PROCEDURE IF EXISTS GetAllBestellingen');
+        DB::unprepared('DROP PROCEDURE IF EXISTS FindBestellingById');
+        DB::unprepared('DROP PROCEDURE IF EXISTS CreateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS UpdateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS DeleteBestelling');
+
         DB::unprepared('
             CREATE PROCEDURE GetAllBestellingen()
             BEGIN
@@ -66,6 +73,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        DB::unprepared('DROP PROCEDURE IF EXISTS GetAllBestellingen');
+        DB::unprepared('DROP PROCEDURE IF EXISTS FindBestellingById');
+        DB::unprepared('DROP PROCEDURE IF EXISTS CreateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS UpdateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS DeleteBestelling');
     }
 };
