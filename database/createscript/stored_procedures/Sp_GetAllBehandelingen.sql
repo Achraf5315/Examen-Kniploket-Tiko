@@ -22,6 +22,7 @@ BEGIN
         AND bpp.IsActief = 1
     LEFT JOIN Product AS p ON p.Id = bpp.ProductId
         AND p.IsActief = 1
+    WHERE b.IsActief = 1
     GROUP BY
         b.Id,
         b.Naam,
