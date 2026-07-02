@@ -13,10 +13,6 @@ class CategorieSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (['Shampoo', 'Verzorging', 'Styling'] as $naam) {
-            Categorie::factory()->create([
-                'Naam' => $naam,
-            ]);
-        }
+        Categorie::factory()->count(5)->create();
     }
 }

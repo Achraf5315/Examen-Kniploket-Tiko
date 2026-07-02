@@ -15,16 +15,6 @@ class MedewerkerPerBehandelingSeeder extends Seeder
      */
     public function run(): void
     {
-        $medewerker = Medewerker::query()->first();
-        $behandeling = Behandeling::query()->first();
-
-        if (! $medewerker || ! $behandeling) {
-            return;
-        }
-
-        MedewerkerPerBehandeling::factory()->create([
-            'MedewerkerId' => $medewerker->getKey(),
-            'BehandelingId' => $behandeling->getKey(),
-        ]);
+        MedewerkerPerBehandeling::factory()->count(5)->create();
     }
 }

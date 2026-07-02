@@ -14,16 +14,6 @@ class BestelregelSeeder extends Seeder
      */
     public function run(): void
     {
-        $bestelling = Bestelling::query()->first();
-
-        if (! $bestelling) {
-            return;
-        }
-
-        Bestelregel::factory()->create([
-            'BestellingId' => $bestelling->getKey(),
-            'Aantal' => 2,
-            'PrijsPerStuk' => 12.50,
-        ]);
+        Bestelregel::factory()->count(5)->create();
     }
 }

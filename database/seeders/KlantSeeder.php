@@ -17,30 +17,6 @@ class KlantSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::factory()->create([
-            'name' => 'Klant Demo',
-            'email' => 'klant@tiko.com',
-            'password' => Hash::make('klant123'),
-        ]);
-
-        $roleId = Rol::query()->where('Rolnaam', 'Klant')->value('Id');
-
-        if ($roleId) {
-            DB::table('RolPerGebruiker')->insert([
-                'GebruikerId' => $user->getKey(),
-                'RolId' => $roleId,
-                'IsActief' => true,
-                'Opmerking' => null,
-                'DatumAangemaakt' => now(),
-                'DatumGewijzigd' => now(),
-            ]);
-        }
-
-        Klant::factory()->create([
-            'GebruikerId' => $user->getKey(),
-            'Naam' => 'Klant Demo',
-            'Telefoonnummer' => '0612345678',
-            'WensenAllergieen' => 'geen',
-        ]);
+        Klant::factory()->count(5)->create();
     }
 }

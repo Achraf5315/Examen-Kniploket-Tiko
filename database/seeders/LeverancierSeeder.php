@@ -13,11 +13,6 @@ class LeverancierSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (['Tiko BV', 'Hair Supply NL'] as $naam) {
-            Leverancier::factory()->create([
-                'Naam' => $naam,
-                'Telefoonnummer' => '0611111111',
-            ]);
-        }
+        Leverancier::factory()->count(5)->create();
     }
 }

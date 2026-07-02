@@ -15,17 +15,6 @@ class BehandelingPerProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $behandeling = Behandeling::query()->first();
-        $product = Product::query()->first();
-
-        if (! $behandeling || ! $product) {
-            return;
-        }
-
-        BehandelingPerProduct::factory()->create([
-            'BehandelingId' => $behandeling->getKey(),
-            'ProductId' => $product->getKey(),
-            'Aantal' => 1,
-        ]);
+        BehandelingPerProduct::factory()->count(5)->create();
     }
 }

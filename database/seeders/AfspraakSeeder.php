@@ -16,21 +16,6 @@ class AfspraakSeeder extends Seeder
      */
     public function run(): void
     {
-        $klant = Klant::query()->first();
-        $medewerker = Medewerker::query()->first();
-        $behandeling = Behandeling::query()->first();
-
-        if (! $klant || ! $medewerker || ! $behandeling) {
-            return;
-        }
-
-        Afspraak::factory()->create([
-            'KlantId' => $klant->getKey(),
-            'MedewerkerId' => $medewerker->getKey(),
-            'BehandelingId' => $behandeling->getKey(),
-            'Datum' => now()->addDays(1)->toDateString(),
-            'Starttijd' => '10:00:00',
-            'Status' => 'Gepland',
-        ]);
+        Afspraak::factory()->count(5)->create();
     }
 }

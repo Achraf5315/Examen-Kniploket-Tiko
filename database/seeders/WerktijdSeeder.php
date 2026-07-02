@@ -14,19 +14,6 @@ class WerktijdSeeder extends Seeder
      */
     public function run(): void
     {
-        $medewerker = Medewerker::query()->first();
-
-        if (! $medewerker) {
-            return;
-        }
-
-        foreach ([['Maandag', '09:00:00', '17:00:00'], ['Dinsdag', '09:00:00', '17:00:00']] as [$dag, $starttijd, $eindtijd]) {
-            Werktijd::factory()->create([
-                'MedewerkerId' => $medewerker->getKey(),
-                'Dag' => $dag,
-                'Starttijd' => $starttijd,
-                'Eindtijd' => $eindtijd,
-            ]);
-        }
+        Werktijd::factory()->count(5)->create();
     }
 }

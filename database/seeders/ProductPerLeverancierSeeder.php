@@ -15,16 +15,6 @@ class ProductPerLeverancierSeeder extends Seeder
      */
     public function run(): void
     {
-        $product = Product::query()->first();
-        $leverancier = Leverancier::query()->first();
-
-        if (! $product || ! $leverancier) {
-            return;
-        }
-
-        ProductPerLeverancier::factory()->create([
-            'ProductId' => $product->getKey(),
-            'LeverancierId' => $leverancier->getKey(),
-        ]);
+        ProductPerLeverancier::factory()->count(5)->create();
     }
 }

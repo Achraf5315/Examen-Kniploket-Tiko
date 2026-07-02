@@ -22,5 +22,10 @@ class RolSeeder extends Seeder
             'IsActief' => true,
             'Opmerking' => null,
         ]);
+
+        Rol::query()->firstOrCreate(['Rolnaam' => 'Medewerker'], [
+            'IsActief' => true,
+            'Opmerking' => null,
+        ]);
     }
 }

@@ -15,19 +15,6 @@ class BestellingSeeder extends Seeder
      */
     public function run(): void
     {
-        $product = Product::query()->first();
-        $klant = Klant::query()->first();
-
-        if (! $product || ! $klant) {
-            return;
-        }
-
-        Bestelling::factory()->create([
-            'ProductId' => $product->getKey(),
-            'KlantId' => $klant->getKey(),
-            'Orderdatum' => now()->toDateString(),
-            'VerwachteLeverdatum' => now()->addDays(3)->toDateString(),
-            'Status' => 'Nieuw',
-        ]);
+        Bestelling::factory()->count(5)->create();
     }
 }

@@ -14,19 +14,6 @@ class AdresSeeder extends Seeder
      */
     public function run(): void
     {
-        $klant = Klant::query()->first();
-
-        if (! $klant) {
-            return;
-        }
-
-        Adres::factory()->create([
-            'KlantId' => $klant->getKey(),
-            'Straatnaam' => 'Voorbeeldstraat',
-            'Huisnummer' => 12,
-            'Toevoeging' => 'A',
-            'Postcode' => '1000AA',
-            'Plaats' => 'Amsterdam',
-        ]);
+        Adres::factory()->count(5)->create();
     }
 }

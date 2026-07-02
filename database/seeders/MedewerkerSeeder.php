@@ -15,19 +15,6 @@ class MedewerkerSeeder extends Seeder
      */
     public function run(): void
     {
-        $address = Adres::query()->first();
-        $owner = User::query()->where('Email', 'eigenaar@tiko.com')->first();
-
-        if (! $address || ! $owner) {
-            return;
-        }
-
-        Medewerker::factory()->create([
-            'GebruikerId' => $owner->getKey(),
-            'AdresId' => $address->getKey(),
-            'Naam' => 'Eigenaar',
-            'Telefoonnummer' => '0600000000',
-            'Specialisaties' => 'Algemeen',
-        ]);
+        Medewerker::factory()->count(5)->create();
     }
 }

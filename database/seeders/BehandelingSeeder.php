@@ -13,10 +13,6 @@ class BehandelingSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (['Knippen', 'Wassen', 'Stylen'] as $naam) {
-            Behandeling::factory()->create([
-                'Naam' => $naam,
-            ]);
-        }
+        Behandeling::factory()->count(5)->create();
     }
 }
