@@ -43,6 +43,8 @@ class BestellingController extends Controller
         $producten = Product::select('Id', 'Productnaam')->get();
         $klanten = Klant::select('Id', 'Naam')->get();
 
+
+        // Geef de producten en klanten door aan de view
         return view('bestellingen.create', [
             'producten' => $producten,
             'klanten' => $klanten,
@@ -69,6 +71,7 @@ class BestellingController extends Controller
             return redirect()->back()->with(['error','Ongeldige datum voor VerwachteLeverdatum.']);
         }
 
+        // Log een waarschuwing als de verwachte leverdatum te vroeg is
         if ($verwachte->lt(Carbon::now()->addDays(2))) {
             Log::warning('Verwachte leverdatum is te vroeg', ['VerwachteLeverdatum' => $validatedData['VerwachteLeverdatum']]);
             
@@ -95,15 +98,20 @@ class BestellingController extends Controller
 
     public function edit($id)
     {
+        // Probeer de bestelling op te halen en log eventuele fouten
         $bestelling = $this->bestelling->findBestellingById($id);
 
+
+        // Controleer of de bestelling bestaat, zo niet, redirect met een foutmelding
         if (!$bestelling) {
             return redirect()->route('bestellingen.index')->with('error', 'Bestelling niet gevonden.');
         }
 
+        // Haal alleen producten en klanten op voor het bewerken van een bestelling
         $producten = Product::select('Id', 'Productnaam')->get();
         $klanten = Klant::select('Id', 'Naam')->get();
 
+        // Geef de bestelling, producten en klanten door aan de view
         return view('bestellingen.edit', [
             'bestelling' => $bestelling,
             'producten' => $producten,
