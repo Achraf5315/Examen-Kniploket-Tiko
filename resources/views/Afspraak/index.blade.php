@@ -1,140 +1,227 @@
 {{-- Afspraakoverzicht conform de wireframe: titel, knop "Nieuwe afspraak", filterbalk en tabel --}}
-@extends('layouts.kniploket')
-
-@section('titel', 'Afspraken - Kniploket Tiko')
-
-@section('inhoud')
-<div class="container py-4">
-
-    {{-- Kop met de titel en de knop "Nieuwe afspraak" (rechtsboven, conform wireframe) --}}
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0">Afspraken</h1>
-
-        @if (Route::has('afspraken.create'))
-            <a href="{{ route('afspraken.create') }}" class="btn btn-dark">Nieuwe afspraak</a>
-        @endif
-    </div>
-
-    {{-- Foutmelding wanneer het overzicht niet uit de database geladen kan worden --}}
-    @isset($foutmelding)
-        <div class="alert alert-danger" role="alert">{{ $foutmelding }}</div>
-    @endisset
-
-    {{-- Filterbalk: filtert op klant, medewerker, behandeling, datum of status --}}
-    <form method="GET" action="{{ route('afspraken.index') }}" class="row g-2 mb-4" role="search">
-        <div class="col-12 col-sm-auto">
-            <input type="text" name="zoek" value="{{ $zoekterm }}" class="form-control" placeholder="Filter afspraken...">
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                Afspraken
+            </h2>
+            @if (Route::has('afspraken.create'))
+                <a href="{{ route('afspraken.create') }}" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-500">
+                    Nieuwe afspraak
+                </a>
+            @endif
         </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-outline-secondary">Filter</button>
-        </div>
-    </form>
+    </x-slot>
 
-    {{-- Tabel met alle afspraken uit de stored procedure spAfspraakOverzicht --}}
-    <div class="table-responsive">
-        <table class="table table-bordered align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th scope="col">Klant</th>
-                    <th scope="col">Medewerker</th>
-                    <th scope="col">Behandeling</th>
-                    <th scope="col">Datum</th>
-                    <th scope="col">Tijd</th>
-                    <th scope="col">Status</th>
-                    <th scope="col" class="text-end">Acties</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($afspraken as $afspraak)
-                    <tr>
-                        <td>{{ $afspraak->KlantNaam }}</td>
-                        <td>{{ $afspraak->MedewerkerNaam }}</td>
-                        <td>{{ $afspraak->BehandelingNaam }}</td>
-                        <td>{{ \Illuminate\Support\Carbon::parse($afspraak->Datum)->format('d-m-Y') }}</td>
-                        {{-- Starttijd en de in de stored procedure berekende eindtijd --}}
-                        <td>{{ substr($afspraak->Starttijd, 0, 5) }} - {{ substr($afspraak->Eindtijd, 0, 5) }}</td>
-                        <td>{{ $afspraak->Status }}</td>
-                        <td class="text-end">
-                            @if (Route::has('afspraken.edit'))
-                                <a href="{{ route('afspraken.edit', $afspraak->Id) }}" class="btn btn-sm btn-outline-dark">Wijzigen</a>
-                            @endif
-                            @if (Route::has('afspraken.destroy'))
-                                <button type="button" class="btn btn-sm btn-outline-danger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#verwijderAfspraakModal-{{ $afspraak->Id }}">
-                                    Verwijderen
-                                </button>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center text-secondary py-4">Geen afspraken gevonden.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
-
-@foreach ($afspraken as $afspraak)
-    <div class="modal fade" id="verwijderAfspraakModal-{{ $afspraak->Id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header border-0 bg-dark text-white">
-                    <div>
-                        <p class="text-uppercase small mb-1 text-white-50">Bevestigen</p>
-                        <h2 class="modal-title fs-5 mb-0">Afspraak verwijderen</h2>
-                    </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+    <div class="py-10">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            @if (session('succes'))
+                <div id="successFlashMessage" class="mb-4 rounded-md border border-green-200 bg-green-50 p-4 text-green-800 transition-opacity duration-500">
+                    {{ session('succes') }}
                 </div>
+            @endif
 
-                <div class="modal-body p-4">
-                    <p class="mb-2 fw-semibold">Weet je zeker dat je deze afspraak wilt verwijderen?</p>
-                    <p class="text-secondary mb-3">Deze actie kan niet ongedaan worden gemaakt.</p>
+            @if (session('fout'))
+                <div class="mb-4 rounded-md border border-red-200 bg-red-50 p-4 text-red-800">
+                    {{ session('fout') }}
+                </div>
+            @endif
 
-                    <div class="border rounded-3 bg-light p-3 mb-3">
-                        <div><strong>Klant:</strong> {{ $afspraak->KlantNaam }}</div>
-                        <div><strong>Medewerker:</strong> {{ $afspraak->MedewerkerNaam }}</div>
-                        <div><strong>Behandeling:</strong> {{ $afspraak->BehandelingNaam }}</div>
-                        <div><strong>Datum:</strong> {{ \Illuminate\Support\Carbon::parse($afspraak->Datum)->format('d-m-Y') }} om {{ substr($afspraak->Starttijd, 0, 5) }}</div>
-                    </div>
+            {{-- Foutmelding wanneer het overzicht niet uit de database geladen kan worden --}}
+            @isset($foutmelding)
+                <div class="mb-4 rounded-md border border-red-200 bg-red-50 p-4 text-red-800">
+                    {{ $foutmelding }}
+                </div>
+            @endisset
 
-                    <form method="POST" action="{{ route('afspraken.destroy', $afspraak->Id) }}">
-                        @csrf
-                        @method('DELETE')
+            {{-- Filterbalk: filtert op klant, medewerker, behandeling, datum of status --}}
+            <form method="GET" action="{{ route('afspraken.index') }}" class="mb-4 flex flex-wrap items-center gap-2" role="search">
+                <input type="text" name="zoek" value="{{ $zoekterm }}" placeholder="Filter afspraken..."
+                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:w-64">
+                <button type="submit" class="rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300">
+                    Filter
+                </button>
+            </form>
 
-                        <div class="mb-3">
-                            <label for="Bevestiging-{{ $afspraak->Id }}" class="form-label">Typ VERWIJDEREN om door te gaan</label>
-                            <input type="text"
-                                   name="Bevestiging"
-                                   id="Bevestiging-{{ $afspraak->Id }}"
-                                   class="form-control @error('Bevestiging') is-invalid @enderror"
-                                   placeholder="VERWIJDEREN"
-                                   autocomplete="off"
-                                   value="{{ old('Bevestiging') }}">
-                            @error('Bevestiging')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="d-flex gap-2 justify-content-end">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuleren</button>
-                            <button type="submit" class="btn btn-danger">Verwijderen</button>
-                        </div>
-                    </form>
+            {{-- Tabel met alle afspraken uit de stored procedure spAfspraakOverzicht --}}
+            <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Klant</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Medewerker</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Behandeling</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Datum</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Tijd</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Status</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Acties</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+                            @forelse ($afspraken as $afspraak)
+                                <tr>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $afspraak->KlantNaam }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $afspraak->MedewerkerNaam }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $afspraak->BehandelingNaam }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ \Illuminate\Support\Carbon::parse($afspraak->Datum)->format('d-m-Y') }}</td>
+                                    {{-- Starttijd en de in de stored procedure berekende eindtijd --}}
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ substr($afspraak->Starttijd, 0, 5) }} - {{ substr($afspraak->Eindtijd, 0, 5) }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $afspraak->Status }}</td>
+                                    <td class="px-4 py-3 text-right text-sm">
+                                        <div class="inline-flex items-center gap-2">
+                                            @if (Route::has('afspraken.edit'))
+                                                <a href="{{ route('afspraken.edit', $afspraak->Id) }}"
+                                                   class="rounded-md bg-amber-500 px-3 py-1.5 font-medium text-white hover:bg-amber-400">
+                                                    Wijzigen
+                                                </a>
+                                            @endif
+                                            @if (Route::has('afspraken.destroy'))
+                                                <button
+                                                    type="button"
+                                                    class="rounded-md bg-red-600 px-3 py-1.5 font-medium text-white hover:bg-red-500"
+                                                    data-id="{{ $afspraak->Id }}"
+                                                    data-delete-url="{{ route('afspraken.destroy', $afspraak->Id) }}"
+                                                    data-klant="{{ $afspraak->KlantNaam }}"
+                                                    data-medewerker="{{ $afspraak->MedewerkerNaam }}"
+                                                    data-behandeling="{{ $afspraak->BehandelingNaam }}"
+                                                    data-datumtijd="{{ \Illuminate\Support\Carbon::parse($afspraak->Datum)->format('d-m-Y') }} om {{ substr($afspraak->Starttijd, 0, 5) }}"
+                                                    onclick="openDeleteModal(this)"
+                                                >
+                                                    Verwijderen
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-300">
+                                        Geen afspraken gevonden.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-@endforeach
 
-@if (request()->filled('verwijder'))
+    {{-- Modal voor verwijderbevestiging met verplichte code "VERWIJDEREN"; de server controleert dit ook. --}}
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h3 class="text-lg font-semibold text-gray-900">Afspraak verwijderen</h3>
+            <p class="mt-2 text-sm text-gray-700">Weet je zeker dat je deze afspraak wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.</p>
+
+            <dl class="mt-3 space-y-1 rounded-md border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+                <div><dt class="inline font-semibold">Klant:</dt> <dd id="modalKlant" class="inline"></dd></div>
+                <div><dt class="inline font-semibold">Medewerker:</dt> <dd id="modalMedewerker" class="inline"></dd></div>
+                <div><dt class="inline font-semibold">Behandeling:</dt> <dd id="modalBehandeling" class="inline"></dd></div>
+                <div><dt class="inline font-semibold">Datum:</dt> <dd id="modalDatumTijd" class="inline"></dd></div>
+            </dl>
+
+            <p class="mt-3 text-sm text-gray-700">Typ exact <span class="font-bold">VERWIJDEREN</span> om te bevestigen.</p>
+
+            <form id="deleteForm" method="POST" class="mt-4 space-y-3" novalidate>
+                @csrf
+                @method('DELETE')
+                <div id="deleteModalError" class="hidden rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"></div>
+                <input
+                    type="text"
+                    name="Bevestiging"
+                    id="Bevestiging"
+                    autocomplete="off"
+                    required
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
+                    placeholder="VERWIJDEREN"
+                >
+                <div class="flex items-center justify-center gap-2">
+                    <button type="button" class="rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300" onclick="closeDeleteModal()">
+                        Annuleren
+                    </button>
+                    <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500">
+                        Verwijderen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        window.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('verwijderAfspraakModal-{{ request('verwijder') }}');
-            if (modal) {
-                bootstrap.Modal.getOrCreateInstance(modal).show();
+        // Opent de modal en koppelt de juiste delete-url en gegevens aan het formulier.
+        function openDeleteModal(button) {
+            const modal = document.getElementById('deleteModal');
+            const form = document.getElementById('deleteForm');
+            const codeInput = document.getElementById('Bevestiging');
+            const errorBox = document.getElementById('deleteModalError');
+
+            form.action = button.getAttribute('data-delete-url');
+            document.getElementById('modalKlant').textContent = button.getAttribute('data-klant');
+            document.getElementById('modalMedewerker').textContent = button.getAttribute('data-medewerker');
+            document.getElementById('modalBehandeling').textContent = button.getAttribute('data-behandeling');
+            document.getElementById('modalDatumTijd').textContent = button.getAttribute('data-datumtijd');
+
+            codeInput.value = '';
+            codeInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            errorBox.textContent = '';
+            errorBox.classList.add('hidden');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Sluit de modal en reset de visuele status.
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Vervangt browser-validatie met een custom melding binnen de modal.
+        document.getElementById('deleteForm').addEventListener('submit', function (event) {
+            const codeInput = document.getElementById('Bevestiging');
+            const errorBox = document.getElementById('deleteModalError');
+            const ingevoerd = (codeInput.value || '').trim();
+
+            if (ingevoerd !== 'VERWIJDEREN') {
+                event.preventDefault();
+
+                errorBox.textContent = 'Je moet exact VERWIJDEREN invoeren om te kunnen verwijderen.';
+                errorBox.classList.remove('hidden');
+                codeInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                codeInput.focus();
             }
         });
+
+        // Laat de succesmelding automatisch na 4 seconden vloeiend verdwijnen.
+        const successFlashMessage = document.getElementById('successFlashMessage');
+        if (successFlashMessage) {
+            setTimeout(function () {
+                successFlashMessage.style.opacity = '0';
+                setTimeout(function () {
+                    successFlashMessage.remove();
+                }, 500);
+            }, 4000);
+        }
+
+        @if (request()->filled('verwijder'))
+            // De server stuurt hier bij een mislukte bevestiging naartoe terug: heropen dezelfde modal.
+            window.addEventListener('DOMContentLoaded', function () {
+                const knop = document.querySelector('[data-id="{{ request('verwijder') }}"]');
+                if (knop) {
+                    openDeleteModal(knop);
+
+                    @if ($errors->has('Bevestiging'))
+                        document.getElementById('Bevestiging').value = @json(old('Bevestiging', ''));
+
+                        const errorBox = document.getElementById('deleteModalError');
+                        errorBox.textContent = @json($errors->first('Bevestiging'));
+                        errorBox.classList.remove('hidden');
+                        document.getElementById('Bevestiging').classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                    @endif
+                }
+            });
+        @endif
     </script>
-@endif
-@endsection
+</x-app-layout>
