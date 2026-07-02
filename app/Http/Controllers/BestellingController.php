@@ -127,6 +127,8 @@ class BestellingController extends Controller
 
     public function update(Request $request, $id)
     {
+        $bestelling = $this->bestelling->findBestellingById($id);
+
         // data valideren die we binnenkrijgen van de form
         $validatedData = $request->validate([
             'ProductNaam' => 'required|exists:Product,Id',
@@ -136,6 +138,7 @@ class BestellingController extends Controller
             'Status' => 'required|string|max:30',
         ]);
 
+        // zet de data in een array voor de update
         $updateData = [
             'ProductId' => $validatedData['ProductNaam'],
             'KlantId' => $validatedData['KlantNaam'],
@@ -159,6 +162,11 @@ class BestellingController extends Controller
             
             session()->flash('error', 'De verwachte leverdatum moet minimaal 2 dagen na de orderdatum liggen.');
 
+            return redirect()->back();
+        }
+
+        if($bestelling->Status === 'Geleverd' || $validatedData['Status'] === 'Verzonden') {
+            session()->flash('error', 'Een bestelling die al is geleverd of verzonden kan niet worden gewijzigd');
             return redirect()->back();
         }
 
