@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\BestellingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class Bestelling extends TikoModel
 {
-    /** @use HasFactory<\Database\Factories\BestellingFactory> */
+    /** @use HasFactory<BestellingFactory> */
     use HasFactory;
 
     protected $table = 'Bestelling';
@@ -21,7 +22,7 @@ class Bestelling extends TikoModel
 
     public function createBestelling(array $data): void
     {
-        DB::statement(
+        DB::select(
             'CALL sp_CreateBestelling(?, ?, ?, ?, ?)',
             [
                 $data['ProductNaam'],
@@ -29,6 +30,23 @@ class Bestelling extends TikoModel
                 $data['Orderdatum'],
                 $data['VerwachteLeverdatum'],
                 $data['Status'],
+            ]
+        );
+    }
+
+    public function updateBestelling(int $id, array $data): void
+    {
+        // Stored procedure expects: Id, KlantId, ProductId, Orderdatum, VerwachteLeverdatum, Status, Opmerking
+        DB::select(
+            'CALL sp_UpdateBestelling(?, ?, ?, ?, ?, ?, ?)',
+            [
+                $id,
+                $data['KlantId'],
+                $data['ProductId'],
+                $data['Orderdatum'],
+                $data['VerwachteLeverdatum'],
+                $data['Status'],
+                $data['Opmerking'] ?? null,
             ]
         );
     }
