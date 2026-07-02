@@ -36,7 +36,7 @@ class Bestelling extends TikoModel
 
     public function updateBestelling(int $id, array $data): void
     {
-        // Stored procedure expects: Id, KlantId, ProductId, Orderdatum, VerwachteLeverdatum, Status, Opmerking
+        // Stored procedure verwacht: Id, KlantId, ProductId, Orderdatum, VerwachteLeverdatum, Status, Opmerking
         DB::select(
             'CALL sp_UpdateBestelling(?, ?, ?, ?, ?, ?, ?)',
             [
