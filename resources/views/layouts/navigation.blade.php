@@ -17,31 +17,12 @@
                     </x-nav-link>
 
                     @auth
-                        @php
-                            $heeftAfsprakenRol = false;
-
-                            if (
-                                \Illuminate\Support\Facades\Schema::hasTable('Rol') &&
-                                \Illuminate\Support\Facades\Schema::hasTable('RolPerGebruiker')
-                            ) {
-                                $heeftAfsprakenRol = auth()
-                                    ->user()
-                                    ->rollen()
-                                    ->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])
-                                    ->where('Rol.IsActief', 1)
-                                    ->wherePivot('IsActief', 1)
-                                    ->exists();
-                            }
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            <x-nav-link :href="route('afspraken.index')" :active="request()->routeIs('afspraken.*')">
-                                {{ __('Afspraken') }}
-                            </x-nav-link>
-                            <x-nav-link :href="route('behandelingen.index')" :active="request()->routeIs('behandelingen.*')">
-                                {{ __('Behandelingen') }}
-                            </x-nav-link>
-                        @endif
+                        <x-nav-link :href="route('afspraken.index')" :active="request()->routeIs('afspraken.*')">
+                            {{ __('Afspraken') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('behandelingen.index')" :active="request()->routeIs('behandelingen.*')">
+                            {{ __('Behandelingen') }}
+                        </x-nav-link>
                     @endauth
 
                     <x-nav-link :href="route('bestellingen.index')" :active="request()->routeIs('bestellingen.index')">
@@ -116,31 +97,12 @@
             </x-responsive-nav-link>
 
             @auth
-                @php
-                    $heeftAfsprakenRol = false;
-
-                    if (
-                        \Illuminate\Support\Facades\Schema::hasTable('Rol') &&
-                        \Illuminate\Support\Facades\Schema::hasTable('RolPerGebruiker')
-                    ) {
-                        $heeftAfsprakenRol = auth()
-                            ->user()
-                            ->rollen()
-                            ->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])
-                            ->where('Rol.IsActief', 1)
-                            ->wherePivot('IsActief', 1)
-                            ->exists();
-                    }
-                @endphp
-
-                @if ($heeftAfsprakenRol)
-                    <x-responsive-nav-link :href="route('afspraken.index')" :active="request()->routeIs('afspraken.*')">
-                        {{ __('Afspraken') }}
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('behandelingen.index')" :active="request()->routeIs('behandelingen.*')">
-                        {{ __('Behandelingen') }}
-                    </x-responsive-nav-link>
-                @endif
+                <x-responsive-nav-link :href="route('afspraken.index')" :active="request()->routeIs('afspraken.*')">
+                    {{ __('Afspraken') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('behandelingen.index')" :active="request()->routeIs('behandelingen.*')">
+                    {{ __('Behandelingen') }}
+                </x-responsive-nav-link>
             @endauth
 
             <x-responsive-nav-link :href="route('bestellingen.index')" :active="request()->routeIs('bestellingen.index')">

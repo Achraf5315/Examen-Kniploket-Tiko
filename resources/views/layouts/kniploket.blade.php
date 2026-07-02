@@ -24,21 +24,14 @@
             <div class="collapse navbar-collapse" id="hoofdNavigatie">
                 <ul class="navbar-nav ms-auto me-lg-4">
                     @auth
-                        @php
-                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            @if (Route::has('behandelingen.index'))
-                                <li class="nav-item"><a class="nav-link" href="{{ route('behandelingen.index') }}">Behandelingen</a></li>
-                            @endif
-                            <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
-
-                            @if (Route::has('afspraken.create'))
-                                <li class="nav-item"><a class="nav-link" href="{{ route('afspraken.create') }}">Afspraak maken</a></li>
-                            @endif
+                        @if (Route::has('behandelingen.index'))
+                            <li class="nav-item"><a class="nav-link" href="{{ route('behandelingen.index') }}">Behandelingen</a></li>
                         @endif
+                        <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
 
+                        @if (Route::has('afspraken.create'))
+                            <li class="nav-item"><a class="nav-link" href="{{ route('afspraken.create') }}">Afspraak maken</a></li>
+                        @endif
                         <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
                     @endauth
                 </ul>

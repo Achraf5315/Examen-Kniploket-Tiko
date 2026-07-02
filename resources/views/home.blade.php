@@ -14,16 +14,10 @@
             <p class="fs-5 text-secondary">Of bestel je haarproducten en haal ze op in de salon.</p>
 
             @auth
-                @php
-                    $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                @endphp
-
-                @if ($heeftAfsprakenRol)
-                    <div class="d-flex flex-wrap gap-3 mt-4">
-                        <a href="{{ route('afspraken.create') }}" class="btn btn-dark btn-lg">Afspraak maken</a>
-                        <a href="#" class="btn btn-outline-dark btn-lg">Bekijk behandelingen</a>
-                    </div>
-                @endif
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{{ route('afspraken.create') }}" class="btn btn-dark btn-lg">Afspraak maken</a>
+                    <a href="#" class="btn btn-outline-dark btn-lg">Bekijk behandelingen</a>
+                </div>
             @endauth
         </div>
 
@@ -49,13 +43,7 @@
                     <h3 class="h5 card-title">Behandelingen</h3>
                     <p class="card-text text-secondary">Bekijk knippen, kleuren, stylen en meer.</p>
                     @auth
-                        @php
-                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            <a href="#" class="fw-semibold text-decoration-none text-dark">Bekijk aanbod &rsaquo;</a>
-                        @endif
+                        <a href="#" class="fw-semibold text-decoration-none text-dark">Bekijk aanbod &rsaquo;</a>
                     @endauth
                 </div>
             </div>
@@ -70,13 +58,7 @@
                     <h3 class="h5 card-title">Producten bestellen</h3>
                     <p class="card-text text-secondary">Bestel online en haal op in de salon.</p>
                     @auth
-                        @php
-                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            <a href="#" class="fw-semibold text-decoration-none text-dark">Naar de shop &rsaquo;</a>
-                        @endif
+                        <a href="#" class="fw-semibold text-decoration-none text-dark">Naar de shop &rsaquo;</a>
                     @endauth
                 </div>
             </div>
@@ -91,13 +73,7 @@
                     <h3 class="h5 card-title">Mijn afspraken</h3>
                     <p class="card-text text-secondary">Bekijk, wijzig of annuleer je afspraken.</p>
                     @auth
-                        @php
-                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            <a href="{{ route('dashboard') }}" class="fw-semibold text-decoration-none text-dark">Mijn account &rsaquo;</a>
-                        @endif
+                        <a href="{{ route('dashboard') }}" class="fw-semibold text-decoration-none text-dark">Mijn account &rsaquo;</a>
                     @endauth
                 </div>
             </div>
