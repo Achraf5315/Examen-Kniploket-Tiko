@@ -303,6 +303,23 @@ INSERT INTO Behandeling (Id, Naam, Prijs, DuurMinuten, IsActief, Opmerking, Datu
 -- 9. BehandelingPerProduct data
 INSERT INTO BehandelingPerProduct (Id, BehandelingId, ProductId, Aantal, IsActief, Opmerking, DatumAangemaakt, DatumGewijzigd) VALUES
 (1, 1, 1, 1, 1, 'Gebruik van 1 dosering shampoo', NOW(), NOW())
+;
+
+-- 10. Rol data
+INSERT INTO Rol (Id, RolNaam, IsActief, Opmerking, DatumAangemaakt, DatumGewijzigd) VALUES
+(1, 'Admin', 1, 'Beheerder van het systeem', NOW(), NOW())
+,(2, 'Medewerker', 1, 'Kapper/Stylist', NOW(), NOW())
+,(3, 'Klant', 1, 'Reguliere klant', NOW(), NOW());
+
+-- 11. RolPerGebruiker data
+INSERT INTO RolPerGebruiker (Id, GebruikerId, RolId, IsActief, Opmerking, DatumAangemaakt, DatumGewijzigd) VALUES
+(1, 1, 1, 1, 'Standaard admin', NOW(), NOW())
+,(2, 2, 3, 1, NULL, NOW(), NOW())
+,(3, 3, 3, 1, NULL, NOW(), NOW())
+,(4, 4, 3, 1, NULL, NOW(), NOW())
+,(5, 5, 3, 1, NULL, NOW(), NOW())
+,(6, 6, 2, 1, 'Eigenares/Styling specialist', NOW(), NOW())
+,(7, 7, 2, 1, 'Senior barber', NOW(), NOW());
 ,(2, 2, 2, 1, 1, 'Gebruik van een beetje klei/wax', NOW(), NOW())
 ,(3, 3, 3, 2, 1, 'Gemiddeld 2 tubes verf nodig', NOW(), NOW())
 ,(4, 4, 4, 1, 1, 'Paar druppels baardolie per afwerking', NOW(), NOW())

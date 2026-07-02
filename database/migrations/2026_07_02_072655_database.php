@@ -14,7 +14,7 @@ return new class extends Migration
 
         // 2. Klant
         Schema::create('Klant', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('GebruikerId');
             $table->string('Naam', 150);
             $table->string('Telefoonnummer', 20);
@@ -28,7 +28,7 @@ return new class extends Migration
 
         // 3. Adres
         Schema::create('Adres', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('KlantId');
             $table->string('Straatnaam', 100);
             $table->smallInteger('Huisnummer');
@@ -44,7 +44,7 @@ return new class extends Migration
 
         // 4. Categorie
         Schema::create('Categorie', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Naam', 150)->unique();
             $table->tinyInteger('IsActief');
             $table->string('Opmerking', 255)->nullable();
@@ -54,7 +54,7 @@ return new class extends Migration
 
         // 5. Leverancier
         Schema::create('Leverancier', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Naam', 100);
             $table->string('Telefoonnummer', 20);
             $table->tinyInteger('IsActief');
@@ -65,7 +65,7 @@ return new class extends Migration
 
         // 6. Product
         Schema::create('Product', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Productnaam', 100);
             $table->string('EanCode', 20)->unique();
             $table->unsignedInteger('CategorieId');
@@ -81,7 +81,7 @@ return new class extends Migration
 
         // 7. ProductPerLeverancier
         Schema::create('ProductPerLeverancier', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('ProductId');
             $table->unsignedInteger('LeverancierId');
             $table->tinyInteger('IsActief');
@@ -94,7 +94,7 @@ return new class extends Migration
 
         // 8. Behandeling
         Schema::create('Behandeling', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Naam', 100);
             $table->decimal('Prijs', 6, 2);
             $table->smallInteger('DuurMinuten');
@@ -106,7 +106,7 @@ return new class extends Migration
 
         // 9. BehandelingPerProduct
         Schema::create('BehandelingPerProduct', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('BehandelingId');
             $table->unsignedInteger('ProductId');
             $table->smallInteger('Aantal');
@@ -120,7 +120,7 @@ return new class extends Migration
 
         // 10. Medewerker
         Schema::create('Medewerker', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('GebruikerId');
             $table->unsignedInteger('AdresId');
             $table->string('Naam', 100);
@@ -136,7 +136,7 @@ return new class extends Migration
 
         // 11. MedewerkerPerBehandeling
         Schema::create('MedewerkerPerBehandeling', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('MedewerkerId');
             $table->unsignedInteger('BehandelingId');
             $table->tinyInteger('IsActief');
@@ -149,7 +149,7 @@ return new class extends Migration
 
         // 12. Werktijd
         Schema::create('Werktijd', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('MedewerkerId');
             $table->string('Dag', 10);
             $table->time('Starttijd');
@@ -163,7 +163,7 @@ return new class extends Migration
 
         // 13. Afspraak
         Schema::create('Afspraak', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('KlantId');
             $table->unsignedInteger('MedewerkerId');
             $table->unsignedInteger('BehandelingId');
@@ -181,7 +181,7 @@ return new class extends Migration
 
         // 14. Bestelling
         Schema::create('Bestelling', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('ProductId');
             $table->unsignedInteger('KlantId');
             $table->date('Orderdatum');
@@ -197,7 +197,7 @@ return new class extends Migration
 
         // 15. Bestelregel
         Schema::create('Bestelregel', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('BestellingId');
             $table->integer('Aantal');
             $table->decimal('PrijsPerStuk', 6, 2);
