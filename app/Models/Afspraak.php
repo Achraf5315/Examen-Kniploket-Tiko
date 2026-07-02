@@ -47,4 +47,34 @@ class Afspraak extends TikoModel
 
         return collect($afspraken);
     }
+
+    /**
+     * Voegt een nieuwe afspraak toe via de stored procedure spAfspraakToevoegen.
+     *
+     * De stored procedure controleert zelf (met een JOIN op Behandeling) of de
+     * afspraak overlapt met een bestaande afspraak van dezelfde medewerker.
+     * Bij overlap gooit MySQL een SIGNAL-fout die als QueryException terugkomt.
+     *
+     * @param  array<string, mixed>  $gegevens  De gevalideerde formuliergegevens
+     * @return int Het Id van de nieuw aangemaakte afspraak
+     */
+    public static function createAfspraak(array $gegevens): int
+    {
+        Log::debug('Stored procedure spAfspraakToevoegen wordt aangeroepen.', $gegevens);
+
+        // Roep de stored procedure aan; deze geeft het nieuwe Id terug
+        $resultaat = DB::select('CALL spAfspraakToevoegen(?, ?, ?, ?, ?)', [
+            $gegevens['KlantId'],
+            $gegevens['MedewerkerId'],
+            $gegevens['BehandelingId'],
+            $gegevens['Datum'],
+            $gegevens['Starttijd'],
+        ]);
+
+        $nieuwId = (int) ($resultaat[0]->Id ?? 0);
+
+        Log::info('Afspraak toegevoegd via stored procedure.', ['afspraak_id' => $nieuwId]);
+
+        return $nieuwId;
+    }
 }
