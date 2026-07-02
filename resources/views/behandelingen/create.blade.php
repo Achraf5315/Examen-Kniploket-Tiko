@@ -8,6 +8,23 @@
     <div class="py-10">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+                {{--
+                    Rood validatie-blok bovenaan het formulier (unhappy path).
+                    Toont álle server-side validatiefouten in het Nederlands, zodat de gebruiker
+                    in één oogopslag ziet wat er mis is. $errors is altijd beschikbaar in Blade.
+                --}}
+                @if ($errors->any())
+                    <div class="mb-5 rounded-md border border-red-200 bg-red-50 p-4 text-red-800">
+                        <p class="font-semibold">Er ging iets mis. Controleer de volgende punten:</p>
+                        <ul class="mt-2 list-disc pl-5 text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                {{-- POST-formulier met @csrf-token; de submit-knop onderaan verstuurt naar behandelingen.store. --}}
                 <form method="POST" action="{{ route('behandelingen.store') }}" class="space-y-5">
                     @csrf
 
