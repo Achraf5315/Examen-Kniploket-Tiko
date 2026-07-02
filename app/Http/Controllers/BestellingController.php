@@ -111,6 +111,12 @@ class BestellingController extends Controller
         $producten = Product::select('Id', 'Productnaam')->get();
         $klanten = Klant::select('Id', 'Naam')->get();
 
+        $selectedProduct = Product::select('Id', 'Productnaam')->find($bestelling->ProductId);
+        if ($selectedProduct && $producten->where('Id', $selectedProduct->Id)->isEmpty()) {
+            $producten = $producten->prepend($selectedProduct);
+        }
+
+
         // Geef de bestelling, producten en klanten door aan de view
         return view('bestellingen.edit', [
             'bestelling' => $bestelling,
