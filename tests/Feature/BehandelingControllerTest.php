@@ -170,4 +170,53 @@ class BehandelingControllerTest extends TestCase
 
         $reactie->assertSessionHasErrors('Naam');
     }
+
+    // ---------- Feature: Behandeling Wijzigen (Update) ----------
+
+    /**
+     * Happy path: een bestaande behandeling wordt gewijzigd en opgeslagen.
+     */
+    public function test_behandeling_wijzigen_lukt_met_geldige_gegevens(): void
+    {
+        // Behandeling 4 uit de seeder ('Baard Trimmen & Contouren') aanpassen.
+        $reactie = $this->actingAs($this->eigenaar())->put(route('behandelingen.update', 4), [
+            'Naam' => 'Baard Trimmen & Contouren (Premium)',
+            'Prijs' => 24.50,
+            'DuurMinuten' => 25,
+            'Opmerking' => 'Nu met heet handdoekje',
+            'Producten' => [4],
+        ]);
+
+        $reactie->assertRedirect(route('behandelingen.index'));
+        $reactie->assertSessionHas('success');
+
+        // De wijziging staat in de database.
+        $this->assertDatabaseHas('Behandeling', [
+            'Id' => 4,
+            'Naam' => 'Baard Trimmen & Contouren (Premium)',
+            'DuurMinuten' => 25,
+        ]);
+    }
+
+    /**
+     * Unhappy path: een te hoge prijs bij wijzigen wordt geweigerd en niet opgeslagen.
+     */
+    public function test_behandeling_wijzigen_faalt_bij_te_hoge_prijs(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('behandelingen.edit', 4))
+            ->put(route('behandelingen.update', 4), [
+                'Naam' => 'Baard Trimmen & Contouren',
+                'Prijs' => 1500,
+                'DuurMinuten' => 20,
+            ]);
+
+        $reactie->assertSessionHasErrors('Prijs');
+
+        // De prijs van de oorspronkelijke behandeling is niet gewijzigd.
+        $this->assertDatabaseHas('Behandeling', [
+            'Id' => 4,
+            'Prijs' => 19.00,
+        ]);
+    }
 }
