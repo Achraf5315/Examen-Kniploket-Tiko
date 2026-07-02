@@ -22,7 +22,7 @@ class Bestelling extends TikoModel
 
     public function createBestelling(array $data): void
     {
-        DB::select(
+        DB::statement(
             'CALL sp_CreateBestelling(?, ?, ?, ?, ?)',
             [
                 $data['ProductNaam'],
@@ -36,13 +36,13 @@ class Bestelling extends TikoModel
 
     public function updateBestelling(int $id, array $data): void
     {
-        // Stored procedure verwacht: Id, KlantId, ProductId, Orderdatum, VerwachteLeverdatum, Status, Opmerking
-        DB::select(
+        // Stored procedure verwacht: Id, ProductId, KlantId, Orderdatum, VerwachteLeverdatum, Status, Opmerking
+        DB::statement(
             'CALL sp_UpdateBestelling(?, ?, ?, ?, ?, ?, ?)',
             [
                 $id,
-                $data['KlantId'],
                 $data['ProductId'],
+                $data['KlantId'],
                 $data['Orderdatum'],
                 $data['VerwachteLeverdatum'],
                 $data['Status'],
@@ -53,7 +53,7 @@ class Bestelling extends TikoModel
 
     public function deleteBestelling(int $id): void
     {
-        DB::select('CALL sp_DeleteBestelling(?)', [$id]);
+        DB::statement('CALL sp_DeleteBestelling(?)', [$id]);
     }
 
     public function findBestellingById(int $id)

@@ -61,14 +61,18 @@
                     </thead>
                     <tbody>
                         @forelse($bestellingen as $bestelling)
+                            @php
+                                $productNaam = $bestelling->ProductNaam ?? $bestelling->Productnaam ?? '';
+                                $klantNaam = $bestelling->KlantNaam ?? $bestelling->Klantnaam ?? '';
+                            @endphp
                             <tr class="hover:bg-gray-50">
                                 <td
                                     class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
-                                    {{ $bestelling->ProductNaam }}
+                                    {{ $productNaam }}
                                 </td>
                                 <td
                                     class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">
-                                    {{ $bestelling->KlantNaam }}
+                                    {{ $klantNaam }}
                                 </td>
                                 <td
                                     class="px-4 py-3 text-sm text-gray-900 border-t border-gray-100 align-middle whitespace-nowrap">

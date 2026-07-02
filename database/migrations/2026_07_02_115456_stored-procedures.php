@@ -14,7 +14,7 @@ return new class extends Migration
     {
         // DROP IF EXISTS voor idempotentie in RefreshDatabase (tests).
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_GetAllBestellingen');
-        DB::unprepared('DROP PROCEDURE IF EXISTS sp_FindBestellingById');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_findBestellingById');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_CreateBestelling');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_UpdateBestelling');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_DeleteBestelling');
@@ -22,7 +22,16 @@ return new class extends Migration
         DB::unprepared('
             CREATE PROCEDURE sp_GetAllBestellingen()
             BEGIN
-                SELECT b.Id, b.Orderdatum, b.Status, p.Productnaam, k.Naam AS KlantNaam
+                SELECT
+                    b.Id,
+                    b.ProductId,
+                    b.KlantId,
+                    b.Orderdatum,
+                    b.VerwachteLeverdatum,
+                    b.Status,
+                    b.Opmerking,
+                    p.Productnaam AS ProductNaam,
+                    k.Naam AS KlantNaam
                 FROM Bestelling b
                 JOIN Product p ON b.ProductId = p.Id
                 JOIN Klant k ON b.KlantId = k.Id;
@@ -30,9 +39,18 @@ return new class extends Migration
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE sp_FindBestellingById(IN bestellingId INT)
+            CREATE PROCEDURE sp_findBestellingById(IN bestellingId INT)
             BEGIN
-                SELECT b.Id, b.Orderdatum, b.Status, p.Productnaam, k.Naam AS KlantNaam
+                SELECT
+                    b.Id,
+                    b.ProductId,
+                    b.KlantId,
+                    b.Orderdatum,
+                    b.VerwachteLeverdatum,
+                    b.Status,
+                    b.Opmerking,
+                    p.Productnaam AS ProductNaam,
+                    k.Naam AS KlantNaam
                 FROM Bestelling b
                 JOIN Product p ON b.ProductId = p.Id
                 JOIN Klant k ON b.KlantId = k.Id
@@ -41,15 +59,47 @@ return new class extends Migration
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE sp_CreateBestelling(IN productId INT, IN klantId INT, IN orderdatum DATE, IN verwachteLeverdatum DATE, IN status VARCHAR(255))
+            CREATE PROCEDURE sp_CreateBestelling(
+                IN productId INT,
+                IN klantId INT,
+                IN orderdatum DATE,
+                IN verwachteLeverdatum DATE,
+                IN status VARCHAR(255)
+            )
             BEGIN
-                INSERT INTO Bestelling (ProductId, KlantId, Orderdatum, VerwachteLeverdatum, Status)
-                VALUES (productId, klantId, orderdatum, verwachteLeverdatum, status);
+                INSERT INTO Bestelling (
+                    ProductId,
+                    KlantId,
+                    Orderdatum,
+                    VerwachteLeverdatum,
+                    Status,
+                    IsActief,
+                    DatumAangemaakt,
+                    DatumGewijzigd
+                )
+                VALUES (
+                    productId,
+                    klantId,
+                    orderdatum,
+                    verwachteLeverdatum,
+                    status,
+                    1,
+                    NOW(),
+                    NOW()
+                );
             END
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE sp_UpdateBestelling(IN bestellingId INT, IN klantId INT, IN productId INT, IN orderdatum DATE, IN verwachteLeverdatum DATE, IN status VARCHAR(255), IN opmerking VARCHAR(255))
+            CREATE PROCEDURE sp_UpdateBestelling(
+                IN bestellingId INT,
+                IN productId INT,
+                IN klantId INT,
+                IN orderdatum DATE,
+                IN verwachteLeverdatum DATE,
+                IN status VARCHAR(255),
+                IN opmerking VARCHAR(255)
+            )
             BEGIN
                 UPDATE Bestelling
                 SET ProductId = productId,
@@ -57,7 +107,8 @@ return new class extends Migration
                     Orderdatum = orderdatum,
                     VerwachteLeverdatum = verwachteLeverdatum,
                     Status = status,
-                    Opmerking = opmerking
+                    Opmerking = opmerking,
+                    DatumGewijzigd = NOW()
                 WHERE Id = bestellingId;
             END
         ');
@@ -65,7 +116,10 @@ return new class extends Migration
         DB::unprepared('
             CREATE PROCEDURE sp_DeleteBestelling(IN bestellingId INT)
             BEGIN
-                DELETE FROM Bestelling WHERE Id = bestellingId;
+                UPDATE Bestelling
+                SET IsActief = 0,
+                    DatumGewijzigd = NOW()
+                WHERE Id = bestellingId;
             END
         ');
     }
@@ -76,7 +130,7 @@ return new class extends Migration
     public function down(): void
     {
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_GetAllBestellingen');
-        DB::unprepared('DROP PROCEDURE IF EXISTS sp_FindBestellingById');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_findBestellingById');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_CreateBestelling');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_UpdateBestelling');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_DeleteBestelling');
