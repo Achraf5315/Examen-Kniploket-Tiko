@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class BestellingReadTest extends TestCase
 {
-    public function test_index_geeft_bestellingen_view_terug_met_data(): void
+    public function test_index_geeft_producten_view_terug_met_data(): void
     {
         $bestellingen = [
             (object) [

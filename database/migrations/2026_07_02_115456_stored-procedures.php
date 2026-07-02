@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -114,13 +112,14 @@ return new class extends Migration
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE sp_DeleteBestelling(IN bestellingId INT)
+            CREATE PROCEDURE sp_DeleteBestelling(
+                IN p_Id INT
+            )
+
             BEGIN
-                UPDATE Bestelling
-                SET IsActief = 0,
-                    DatumGewijzigd = NOW()
-                WHERE Id = bestellingId;
+            DELETE FROM Bestelling WHERE Id = p_Id;
             END
+
         ');
     }
 
