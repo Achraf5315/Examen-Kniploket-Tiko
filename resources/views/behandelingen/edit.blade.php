@@ -37,7 +37,8 @@
                             type="number"
                             required
                             min="0"
-                            max="9999.99"
+                            {{-- Maximaal 3 cijfers voor de komma: 999.99. HTML5-limiet naast de server-side check. --}}
+                            max="999.99"
                             step="0.01"
                             value="{{ old('Prijs', $behandeling->Prijs) }}"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -55,7 +56,8 @@
                             type="number"
                             required
                             min="1"
-                            max="600"
+                            {{-- Maximaal 3 cijfers in totaal: 999 minuten. HTML5-limiet naast de server-side check. --}}
+                            max="999"
                             step="1"
                             value="{{ old('DuurMinuten', $behandeling->DuurMinuten) }}"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
