@@ -16,5 +16,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
+Route::middleware(['auth'])->group(function () {
+    Route::resource('products', App\Http\Controllers\ProductController::class);
+    
+    Route::prefix('api/products')->group(function () {
+        Route::get('check-ean/{eanCode}', 
+            [App\Http\Controllers\ProductController::class, 'checkEanCode'])
+            ->name('products.check-ean');
+        Route::get('low-stock', 
+            [App\Http\Controllers\ProductController::class, 'getLowStockProducts'])
+            ->name('products.low-stock');
+    });
+});
 require __DIR__.'/auth.php';
