@@ -119,4 +119,19 @@ class Afspraak extends TikoModel
 
         Log::info('Afspraak gewijzigd via stored procedure.', ['afspraak_id' => $id]);
     }
+
+    /**
+     * Verwijdert een afspraak definitief via de stored procedure spAfspraakVerwijderen.
+     *
+     * De stored procedure controleert eerst of de afspraak bestaat en gooit
+     * anders een SIGNAL-fout die als QueryException terugkomt.
+     */
+    public static function deleteAfspraak(int $id): void
+    {
+        Log::debug('Stored procedure spAfspraakVerwijderen wordt aangeroepen.', ['afspraak_id' => $id]);
+
+        DB::statement('CALL spAfspraakVerwijderen(?)', [$id]);
+
+        Log::info('Afspraak verwijderd via stored procedure.', ['afspraak_id' => $id]);
+    }
 }
