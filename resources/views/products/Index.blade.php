@@ -7,17 +7,17 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
         @if(session('success'))
-            <div class="bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-4 py-3 rounded-lg">
+            <div class="js-flash-notification bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-4 py-3 rounded-lg transition-opacity duration-300">
                 {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
-            <div class="bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-4 py-3 rounded-lg">
+            <div class="js-flash-notification bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-4 py-3 rounded-lg transition-opacity duration-300">
                 {{ session('error') }}
             </div>
         @endif
         @if(session('warning'))
-            <div class="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 px-4 py-3 rounded-lg">
+            <div class="js-flash-notification bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 px-4 py-3 rounded-lg transition-opacity duration-300">
                 {{ session('warning') }}
             </div>
         @endif
@@ -292,3 +292,21 @@
     </div>
 </div>
 @endsection
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const notifications = document.querySelectorAll('.js-flash-notification');
+
+            notifications.forEach(function (notification) {
+                window.setTimeout(function () {
+                    notification.classList.add('opacity-0');
+
+                    window.setTimeout(function () {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            });
+        });
+    </script>
+    @endpush
