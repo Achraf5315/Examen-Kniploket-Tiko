@@ -267,4 +267,68 @@ class AfspraakControllerTest extends TestCase
         $reactie->assertRedirect(route('afspraken.index'));
         $reactie->assertSessionHas('fout', 'De afspraak is niet gevonden.');
     }
+
+    // ---------- Feature: Afspraak Verwijderen ----------
+
+    /**
+     * De bevestigingspagina voor het verwijderen is bereikbaar.
+     */
+    public function test_verwijder_bevestigingspagina_is_bereikbaar(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())->get(route('afspraken.delete', 1));
+
+        $reactie->assertOk();
+        $reactie->assertViewIs('Afspraak.Verwijderen');
+        $reactie->assertSee('Afspraak verwijderen');
+        $reactie->assertSee('Deze actie kan niet ongedaan worden');
+        $reactie->assertSee('VERWIJDEREN');
+    }
+
+    /**
+     * Scenario: een afspraak wordt succesvol verwijderd met de juiste bevestiging.
+     */
+    public function test_afspraak_verwijderen_lukt_met_juiste_bevestiging(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())->delete(route('afspraken.destroy', 1), [
+            'Bevestiging' => 'VERWIJDEREN',
+        ]);
+
+        $reactie->assertRedirect(route('afspraken.index'));
+        $reactie->assertSessionHas('succes');
+
+        // De afspraak is definitief verwijderd uit de database
+        $this->assertDatabaseMissing('Afspraak', ['Id' => 1]);
+    }
+
+    /**
+     * Scenario: een afspraak verwijderen lukt niet met een verkeerd bevestigingswoord.
+     */
+    public function test_afspraak_verwijderen_faalt_bij_verkeerd_bevestigingswoord(): void
+    {
+        // De gebruiker typt "VERWIJDEdd" in plaats van "VERWIJDEREN"
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('afspraken.delete', 1))
+            ->delete(route('afspraken.destroy', 1), [
+                'Bevestiging' => 'VERWIJDEdd',
+            ]);
+
+        $reactie->assertRedirect(route('afspraken.delete', 1));
+        $reactie->assertSessionHasErrors('Bevestiging');
+
+        // De afspraak bestaat nog steeds
+        $this->assertDatabaseHas('Afspraak', ['Id' => 1]);
+    }
+
+    /**
+     * Het verwijderen van een onbekende afspraak geeft een nette melding.
+     */
+    public function test_verwijderen_van_onbekende_afspraak_geeft_melding(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())->delete(route('afspraken.destroy', 999), [
+            'Bevestiging' => 'VERWIJDEREN',
+        ]);
+
+        $reactie->assertRedirect(route('afspraken.index'));
+        $reactie->assertSessionHas('fout', 'De afspraak is niet gevonden.');
+    }
 }
