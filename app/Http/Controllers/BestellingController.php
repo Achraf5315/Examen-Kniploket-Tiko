@@ -166,7 +166,7 @@ class BestellingController extends Controller
         }
 
         // Controleer of de bestelling al is geleverd of verzonden, zo ja, geef een foutmelding en redirect terug
-        if($bestelling->Status === 'Geleverd' || $validatedData['Status'] === 'Verzonden') {
+        if($bestelling->Status === 'Geleverd' || $bestelling->Status === 'Verzonden') {
             session()->flash('error', 'Een bestelling die al is geleverd of verzonden kan niet worden gewijzigd');
             return redirect()->back();
         }
@@ -189,6 +189,14 @@ class BestellingController extends Controller
 
     public function destroy($id)
     {
+        $bestelling = $this->bestelling->findBestellingById($id);
+        
+         // Controleer of de bestelling al is geleverd of verzonden, zo ja, geef een foutmelding en redirect terug
+        if($bestelling->Status === 'Geleverd' || $bestelling->Status === 'Verzonden') {
+            session()->flash('error', 'Een bestelling die al is geleverd of verzonden kan niet worden verwijderd');
+            return redirect()->back();
+        }
+
         // Probeer de bestelling te verwijderen en log eventuele fouten
         try {
             $this->bestelling->deleteBestelling($id);
