@@ -20,6 +20,7 @@ class BestellingController extends Controller
 
     public function index()
     {
+        // Probeer bestellingen op te halen en log eventuele fouten
         try {
             $bestellingen = $this->bestelling->getAllBestellingen();
 
@@ -30,6 +31,7 @@ class BestellingController extends Controller
             $bestellingen = [];
         }
 
+        // Geef de bestellingen door aan de view
         return view('bestellingen.index', [
             'bestellingen' => $bestellingen,
         ]);
@@ -89,5 +91,23 @@ class BestellingController extends Controller
         session()->flash('success', 'Bestelling toegevoegd.');
 
         return redirect()->route('bestellingen.index');
+    }
+
+    public function edit($id)
+    {
+        $bestelling = $this->bestelling->findBestellingById($id);
+
+        if (!$bestelling) {
+            return redirect()->route('bestellingen.index')->with('error', 'Bestelling niet gevonden.');
+        }
+
+        $producten = Product::select('Id', 'Productnaam')->get();
+        $klanten = Klant::select('Id', 'Naam')->get();
+
+        return view('bestellingen.edit', [
+            'bestelling' => $bestelling,
+            'producten' => $producten,
+            'klanten' => $klanten,
+        ]);
     }
 }

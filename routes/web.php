@@ -24,6 +24,14 @@ Route::post('/bestellingen', [BestellingController::class, 'store'])
 ->name('bestellingen.store')
 ->middleware(['auth', 'verified']);
 
+Route::get('/bestellingen/{bestelling}/edit', [BestellingController::class, 'edit'])
+->name('bestellingen.edit')
+->middleware(['auth', 'verified']);
+
+Route::put('/bestellingen/{bestelling}', [BestellingController::class, 'update'])
+->name('bestellingen.update')
+->middleware(['auth', 'verified']);
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
