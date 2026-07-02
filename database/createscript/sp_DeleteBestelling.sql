@@ -1,13 +1,15 @@
+SELECT * FROM Bestelling;
+
 DROP PROCEDURE IF EXISTS sp_DeleteBestelling;
 
 DELIMITER $$
 
 CREATE PROCEDURE sp_DeleteBestelling(
-    IN Id INT
+    IN p_Id INT
 )
 
 BEGIN
-    DELETE FROM Bestelling WHERE Id = Id;
+    DELETE FROM Bestelling WHERE Id = p_Id;
 END$$
 
 DELIMITER ;

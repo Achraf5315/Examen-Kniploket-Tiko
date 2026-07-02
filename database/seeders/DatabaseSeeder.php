@@ -28,6 +28,6 @@ class DatabaseSeeder extends Seeder
             'DatumGewijzigd' => now(),
         ]);
         
-        // $this->call(DummyDataSeeder::class);
+        $this->call(DummyDataSeeder::class);
     }
 }
