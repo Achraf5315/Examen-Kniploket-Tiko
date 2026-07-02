@@ -16,7 +16,7 @@
     <div class="py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             @if (session('success'))
-                <div class="mb-4 rounded-md border border-green-200 bg-green-50 p-4 text-green-800">
+                <div id="successFlashMessage" class="mb-4 rounded-md border border-green-200 bg-green-50 p-4 text-green-800 transition-opacity duration-500">
                     {{ session('success') }}
                 </div>
             @endif
@@ -47,7 +47,7 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Prijs</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Duur (min)</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Producten</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Actief</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Opmerking</th>
                                 <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-200">Acties</th>
                             </tr>
                         </thead>
@@ -58,9 +58,7 @@
                                     <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">EUR {{ number_format((float) $behandeling->Prijs, 2, ',', '.') }}</td>
                                     <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $behandeling->DuurMinuten }}</td>
                                     <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $behandeling->Producten ?: '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                        {{ (int) $behandeling->IsActief === 1 ? 'Ja' : 'Nee' }}
-                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $behandeling->Opmerking ?: '-' }}</td>
                                     <td class="px-4 py-3 text-right text-sm">
                                         <div class="inline-flex items-center gap-2">
                                             <a
@@ -106,16 +104,15 @@
                 Typ exact <span class="font-bold">VERWIJDEREN</span> om te bevestigen.
             </p>
 
-            <form id="deleteForm" method="POST" class="mt-4 space-y-3">
+            <form id="deleteForm" method="POST" class="mt-4 space-y-3" novalidate>
                 @csrf
                 @method('DELETE')
+                <div id="deleteModalError" class="hidden rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"></div>
                 <input
                     type="text"
                     name="bevestigingscode"
                     id="bevestigingscode"
                     required
-                    pattern="VERWIJDEREN"
-                    title="Typ exact VERWIJDEREN"
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
                     placeholder="VERWIJDEREN"
                 >
@@ -145,10 +142,14 @@
             const form = document.getElementById('deleteForm');
             const naamSpan = document.getElementById('modalBehandelingNaam');
             const codeInput = document.getElementById('bevestigingscode');
+            const errorBox = document.getElementById('deleteModalError');
 
             form.action = button.getAttribute('data-delete-url');
             naamSpan.textContent = button.getAttribute('data-behandeling-naam');
             codeInput.value = '';
+            codeInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            errorBox.textContent = '';
+            errorBox.classList.add('hidden');
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -157,9 +158,45 @@
         // Sluit de modal en reset visuele status.
         function closeDeleteModal() {
             const modal = document.getElementById('deleteModal');
+            const errorBox = document.getElementById('deleteModalError');
+            const codeInput = document.getElementById('bevestigingscode');
 
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            errorBox.textContent = '';
+            errorBox.classList.add('hidden');
+            codeInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+        }
+
+        // Vervangt browser-validatie met een custom melding binnen de modal.
+        document.getElementById('deleteForm').addEventListener('submit', function (event) {
+            const codeInput = document.getElementById('bevestigingscode');
+            const errorBox = document.getElementById('deleteModalError');
+            const ingevoerd = (codeInput.value || '').trim();
+
+            if (ingevoerd !== 'VERWIJDEREN') {
+                event.preventDefault();
+
+                errorBox.textContent = 'Je moet exact VERWIJDEREN invoeren om te kunnen verwijderen.';
+                errorBox.classList.remove('hidden');
+                codeInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                codeInput.focus();
+                return;
+            }
+
+            errorBox.textContent = '';
+            errorBox.classList.add('hidden');
+        });
+
+        // Laat succesmeldingen automatisch na 4 seconden vloeiend verdwijnen.
+        const successFlashMessage = document.getElementById('successFlashMessage');
+        if (successFlashMessage) {
+            setTimeout(function () {
+                successFlashMessage.style.opacity = '0';
+                setTimeout(function () {
+                    successFlashMessage.remove();
+                }, 500);
+            }, 4000);
         }
     </script>
 </x-app-layout>

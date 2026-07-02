@@ -66,17 +66,33 @@
                     </div>
 
                     <div>
-                        <label for="IsActief" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Status</label>
-                        <select
-                            id="IsActief"
-                            name="IsActief"
-                            required
-                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        >
-                            <option value="1" {{ old('IsActief', (string) (int) $behandeling->IsActief) === '1' ? 'selected' : '' }}>Actief</option>
-                            <option value="0" {{ old('IsActief', (string) (int) $behandeling->IsActief) === '0' ? 'selected' : '' }}>Inactief</option>
-                        </select>
-                        @error('IsActief')
+                        <p class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">Producten koppelen</p>
+                        <div class="grid grid-cols-1 gap-2 rounded-md border border-gray-200 p-3">
+                            @php
+                                $oudeProducten = old('Producten');
+                                $huidigeSelectie = is_array($oudeProducten)
+                                    ? array_map('intval', $oudeProducten)
+                                    : $geselecteerdeProducten;
+                            @endphp
+                            @forelse ($producten as $product)
+                                <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                                    <input
+                                        type="checkbox"
+                                        name="Producten[]"
+                                        value="{{ $product->Id }}"
+                                        {{ in_array((int) $product->Id, $huidigeSelectie, true) ? 'checked' : '' }}
+                                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"
+                                    >
+                                    <span>{{ $product->Productnaam }}</span>
+                                </label>
+                            @empty
+                                <p class="text-sm text-gray-500">Er zijn geen actieve producten beschikbaar.</p>
+                            @endforelse
+                        </div>
+                        @error('Producten')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        @error('Producten.*')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
