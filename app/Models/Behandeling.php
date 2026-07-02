@@ -40,8 +40,14 @@ class Behandeling extends TikoModel
         // Technische log zodat we kunnen zien wanneer het overzicht wordt opgehaald.
         Log::debug('Behandelingoverzicht opgehaald via Sp_GetAllBehandelingen');
 
-        return DB::select('CALL Sp_GetAllBehandelingen()');
-    }
+        try {
+            $result = DB::select('CALL Sp_GetAllBehandelingen()');
+        } catch (\Exception $e) {
+            Log::error('Fout bij het ophalen van behandelingen: '.$e->getMessage());
+            return [];
+        }
+        
+        return $result;}
 
     /**
      * Voegt een behandeling toe via de stored procedure Sp_InsertBehandeling.
