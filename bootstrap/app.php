@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Alias voor de rolcontrole zodat routes 'rol:Admin,Medewerker' kunnen gebruiken
+        $middleware->alias([
+            'rol' => \App\Http\Middleware\ControleerRol::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
