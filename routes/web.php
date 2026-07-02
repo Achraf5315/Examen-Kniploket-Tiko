@@ -23,6 +23,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'rol:Admin,Medewerker'])->group(function () {
     // Overzicht van alle afspraken (Read)
     Route::get('/afspraken', [AfspraakController::class, 'index'])->name('afspraken.index');
+
+    // Afspraak toevoegen (Create): formulier tonen en opslaan
+    Route::get('/afspraken/toevoegen', [AfspraakController::class, 'create'])->name('afspraken.create');
+    Route::post('/afspraken', [AfspraakController::class, 'store'])->name('afspraken.store');
 });
 
 require __DIR__.'/auth.php';
