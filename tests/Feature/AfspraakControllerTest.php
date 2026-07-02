@@ -108,4 +108,86 @@ class AfspraakControllerTest extends TestCase
 
         $reactie->assertRedirect(route('login'));
     }
+
+    // ---------- Feature: Afspraak Toevoegen ----------
+
+    /**
+     * Het formulier voor het toevoegen van een afspraak is bereikbaar.
+     */
+    public function test_toevoegen_formulier_is_bereikbaar(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())->get(route('afspraken.create'));
+
+        $reactie->assertOk();
+        $reactie->assertViewIs('Afspraak.Toevoegen');
+        $reactie->assertSee('Afspraak Toevoegen');
+    }
+
+    /**
+     * Scenario: een afspraak wordt succesvol toegevoegd.
+     * Geldige gegevens zonder overlap worden opgeslagen en verschijnen in het overzicht.
+     */
+    public function test_afspraak_toevoegen_lukt_met_geldige_gegevens(): void
+    {
+        // Medewerker 1 heeft op 2026-07-10 alleen een afspraak van 10:00 tot 10:45,
+        // dus 13:00 is vrij (geen overlap)
+        $reactie = $this->actingAs($this->eigenaar())->post(route('afspraken.store'), [
+            'KlantId' => 2,
+            'MedewerkerId' => 1,
+            'BehandelingId' => 2,
+            'Datum' => '2026-07-10',
+            'Starttijd' => '13:00',
+        ]);
+
+        $reactie->assertRedirect(route('afspraken.index'));
+        $reactie->assertSessionHas('succes');
+
+        // De afspraak staat in de database met de standaardstatus Gereserveerd
+        $this->assertDatabaseHas('Afspraak', [
+            'KlantId' => 2,
+            'MedewerkerId' => 1,
+            'BehandelingId' => 2,
+            'Datum' => '2026-07-10',
+            'Starttijd' => '13:00:00',
+            'Status' => 'Gereserveerd',
+        ]);
+    }
+
+    /**
+     * Scenario: een afspraak toevoegen lukt niet vanwege overlap.
+     * De stored procedure weigert de afspraak en de gebruiker krijgt een melding.
+     */
+    public function test_afspraak_toevoegen_faalt_bij_overlap(): void
+    {
+        // Medewerker 1 heeft al een afspraak op 2026-07-10 van 10:00 tot 10:45,
+        // dus een nieuwe afspraak om 10:30 overlapt daarmee
+        $reactie = $this->actingAs($this->eigenaar())->post(route('afspraken.store'), [
+            'KlantId' => 2,
+            'MedewerkerId' => 1,
+            'BehandelingId' => 2,
+            'Datum' => '2026-07-10',
+            'Starttijd' => '10:30',
+        ]);
+
+        $reactie->assertSessionHas('fout', 'De afspraak overlapt met een bestaande afspraak.');
+
+        // De overlappende afspraak is niet opgeslagen
+        $this->assertDatabaseMissing('Afspraak', [
+            'Datum' => '2026-07-10',
+            'Starttijd' => '10:30:00',
+        ]);
+    }
+
+    /**
+     * Ongeldige invoer wordt tegengehouden door de Form Request validatie.
+     */
+    public function test_afspraak_toevoegen_faalt_bij_ongeldige_invoer(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('afspraken.create'))
+            ->post(route('afspraken.store'), []);
+
+        $reactie->assertRedirect(route('afspraken.create'));
+        $reactie->assertSessionHasErrors(['KlantId', 'MedewerkerId', 'BehandelingId', 'Datum', 'Starttijd']);
+    }
 }
