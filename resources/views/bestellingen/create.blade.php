@@ -5,6 +5,15 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     Bestellingen Toevoegen
                 </div>
+
+                @if (session('error'))
+                    <div
+                        class="mx-2 p-3 text-sm text-red-800 bg-red-100 border border-red-300 rounded-lg dark:bg-red-900 dark:text-red-100 dark:border-red-700">
+                        {{ session('error') }}
+                        <meta http-equiv="refresh" content="5;url={{ route('bestellingen.create') }}">
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('bestellingen.store') }}" class="p-6 space-y-6">
                     @csrf
                     @php $statuses = ['Nieuw', 'In behandeling', 'Verzonden', 'Geleverd', 'Geannuleerd']; @endphp
@@ -17,7 +26,8 @@
                                 @if(isset($producten) && count($producten))
                                     @foreach($producten as $product)
                                         <option value="{{ $product->Id }}" @selected(old('ProductNaam') == $product->Id)>
-                                            {{ $product->Productnaam }}</option>
+                                            {{ $product->Productnaam }}
+                                        </option>
                                     @endforeach
                                 @else
                                     <option value="product-1">Geen producten gevonden</option>
@@ -36,7 +46,8 @@
                                 @if(isset($klanten) && count($klanten))
                                     @foreach($klanten as $klant)
                                         <option value="{{ $klant->Id }}" @selected(old('KlantNaam') == $klant->Id)>
-                                            {{ $klant->Naam}}</option>
+                                            {{ $klant->Naam}}
+                                        </option>
                                     @endforeach
                                 @else
                                     <option value="klant-1">Geen klanten gevonden</option>

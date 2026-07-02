@@ -9,6 +9,23 @@
                         Nieuwe bestelling toevoegen
                     </a>
                 </div>
+
+                @if(session('success'))
+                    <div
+                        class="mx-2 p-3 text-sm text-green-800 bg-green-100 border border-green-300 rounded-lg dark:bg-green-900 dark:text-green-100 dark:border-green-700">
+                        {{ session('success') }}
+                        <meta http-equiv="refresh" content="5;url={{ route('bestellingen.index') }}">
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div
+                        class="mx-2 p-3 text-sm text-red-800 bg-red-100 border border-red-300 rounded-lg dark:bg-red-900 dark:text-red-100 dark:border-red-700">
+                        {{ session('error') }}
+                        <meta http-equiv="refresh" content="5;url={{ route('bestellingen.index') }}">
+                    </div>
+                @endif
+
                 <table class="w-full border border-gray-200 border-separate font-semibold mb-0 align-middle">
                     <thead>
                         <tr>

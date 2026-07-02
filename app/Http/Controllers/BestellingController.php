@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bestelling;
 use App\Models\Klant;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -48,6 +49,7 @@ class BestellingController extends Controller
 
     public function store(Request $request)
     {
+        // data valideren die we binnenkrijgen van de form
         $validatedData = $request->validate([
             'ProductNaam' => 'required|exists:Product,Id',
             'KlantNaam' => 'required|exists:Klant,Id',
@@ -56,14 +58,36 @@ class BestellingController extends Controller
             'Status' => 'required|string|max:30',
         ]);
 
+        // Controleer of de verwachte leverdatum minimaal 2 dagen in de toekomst ligt
+        try {
+            $verwachte = Carbon::parse($validatedData['VerwachteLeverdatum']);
+        } catch (\Exception $e) {
+            Log::error('Ongeldige datum voor VerwachteLeverdatum: '.$validatedData['VerwachteLeverdatum']);
+
+            return redirect()->back()->with(['error','Ongeldige datum voor VerwachteLeverdatum.']);
+        }
+
+        if ($verwachte->lt(Carbon::now()->addDays(2))) {
+            Log::warning('Verwachte leverdatum is te vroeg', ['VerwachteLeverdatum' => $validatedData['VerwachteLeverdatum']]);
+            
+            session()->flash('error', 'De verwachte leverdatum moet minimaal 2 dagen na de orderdatum liggen.');
+
+            return redirect()->back();
+        }
+
+        // Probeer de bestelling op te slaan en log eventuele fouten
         try {
             $this->bestelling->createBestelling($validatedData);
             Log::info('Bestelling opgeslagen', ['bestelling' => $validatedData]);
         } catch (\Exception $e) {
             Log::error('Fout bij het opslaan van bestelling: '.$e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Er is een fout opgetreden bij het opslaan van de bestelling.']);
+
+            return redirect()->back()->with('error', 'Er is een fout opgetreden bij het opslaan van de bestelling.');
         }
 
-        return redirect()->route('bestellingen.index')->with('success', 'Bestelling opgeslagen.');
+        // Redirect naar de indexpagina met een succesbericht
+        session()->flash('success', 'Bestelling toegevoegd.');
+
+        return redirect()->route('bestellingen.index');
     }
 }
