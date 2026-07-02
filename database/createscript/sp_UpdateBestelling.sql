@@ -20,7 +20,8 @@ BEGIN
         VerwachteLeverdatum = p_VerwachteLeverdatum,
         Status = p_Status,
         DatumGewijzigd = NOW()
-    WHERE Id = p_Id;
+    WHERE Id = p_Id
+    ORDER BY DatumGewijzigd DESC;
 END$$
 
 DELIMITER ;

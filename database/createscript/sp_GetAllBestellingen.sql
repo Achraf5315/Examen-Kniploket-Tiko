@@ -19,7 +19,8 @@ BEGIN
         b.DatumGewijzigd
     FROM Bestelling b
     LEFT JOIN Product p ON b.ProductId = p.Id
-    LEFT JOIN Klant k ON b.KlantId = k.Id;
+    LEFT JOIN Klant k ON b.KlantId = k.Id
+    ORDER BY b.DatumGewijzigd DESC;
 END $$
 
 DELIMITER ;

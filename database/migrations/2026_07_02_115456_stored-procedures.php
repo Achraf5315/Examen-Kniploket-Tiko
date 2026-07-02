@@ -52,7 +52,8 @@ return new class extends Migration
                 FROM Bestelling b
                 JOIN Product p ON b.ProductId = p.Id
                 JOIN Klant k ON b.KlantId = k.Id
-                WHERE b.Id = bestellingId;
+                WHERE b.Id = bestellingId
+                ORDER BY b.DatumGewijzigd DESC;
             END
         ');
 
@@ -107,7 +108,8 @@ return new class extends Migration
                     Status = status,
                     Opmerking = opmerking,
                     DatumGewijzigd = NOW()
-                WHERE Id = bestellingId;
+                WHERE Id = bestellingId
+                ORDER BY DatumGewijzigd DESC;
             END
         ');
 
