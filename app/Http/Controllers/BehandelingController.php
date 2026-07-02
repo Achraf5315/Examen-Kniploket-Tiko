@@ -65,32 +65,19 @@ class BehandelingController extends Controller
                     ->with('error', 'Deze behandeling bestaat al. Kies een andere naam.');
             }
 
-            DB::transaction(function () use ($validated): void {
-                $behandeling = Behandeling::create([
-                    'Naam' => $validated['Naam'],
-                    'Prijs' => $validated['Prijs'],
-                    'DuurMinuten' => $validated['DuurMinuten'],
-                    // Status staat functioneel standaard op actief.
-                    'IsActief' => true,
-                    'Opmerking' => $validated['Opmerking'] ?? null,
-                ]);
+            // Stored procedure verwacht één product-id; bij meerdere selecties nemen we de eerste.
+            $productId = null;
+            if (isset($validated['Producten']) && is_array($validated['Producten']) && $validated['Producten'] !== []) {
+                $productId = (int) $validated['Producten'][0];
+            }
 
-                // Koppel geselecteerde producten met standaard hoeveelheid 1.
-                $pivotData = [];
-                foreach ($validated['Producten'] ?? [] as $productId) {
-                    $pivotData[$productId] = [
-                        'Aantal' => 1,
-                        'IsActief' => 1,
-                        'Opmerking' => null,
-                        'DatumAangemaakt' => now(),
-                        'DatumGewijzigd' => now(),
-                    ];
-                }
-
-                if ($pivotData !== []) {
-                    $behandeling->producten()->sync($pivotData);
-                }
-            });
+            Behandeling::insertViaProcedure(
+                $validated['Naam'],
+                (float) $validated['Prijs'],
+                (int) $validated['DuurMinuten'],
+                $validated['Opmerking'] ?? null,
+                $productId
+            );
 
             return redirect()
                 ->route('behandelingen.index')
@@ -147,30 +134,20 @@ class BehandelingController extends Controller
         ], $this->validationMessages(), $this->validationAttributes());
 
         try {
-            DB::transaction(function () use ($behandeling, $validated): void {
-                $behandeling->update([
-                    'Naam' => $validated['Naam'],
-                    'Prijs' => $validated['Prijs'],
-                    'DuurMinuten' => $validated['DuurMinuten'],
-                    // Status staat functioneel standaard op actief.
-                    'IsActief' => true,
-                    'Opmerking' => $validated['Opmerking'] ?? null,
-                ]);
+            // Stored procedure verwacht één product-id; bij meerdere selecties nemen we de eerste.
+            $productId = null;
+            if (isset($validated['Producten']) && is_array($validated['Producten']) && $validated['Producten'] !== []) {
+                $productId = (int) $validated['Producten'][0];
+            }
 
-                // Synchroniseer productkoppelingen op basis van de huidige formulierkeuze.
-                $pivotData = [];
-                foreach ($validated['Producten'] ?? [] as $productId) {
-                    $pivotData[$productId] = [
-                        'Aantal' => 1,
-                        'IsActief' => 1,
-                        'Opmerking' => null,
-                        'DatumAangemaakt' => now(),
-                        'DatumGewijzigd' => now(),
-                    ];
-                }
-
-                $behandeling->producten()->sync($pivotData);
-            });
+            Behandeling::updateViaProcedure(
+                (int) $behandeling->Id,
+                $validated['Naam'],
+                (float) $validated['Prijs'],
+                (int) $validated['DuurMinuten'],
+                $validated['Opmerking'] ?? null,
+                $productId
+            );
 
             return redirect()
                 ->route('behandelingen.index')
@@ -207,7 +184,7 @@ class BehandelingController extends Controller
         ]);
 
         try {
-            $behandeling->delete();
+            Behandeling::deleteViaProcedure((int) $behandeling->Id);
 
             return redirect()
                 ->route('behandelingen.index')
