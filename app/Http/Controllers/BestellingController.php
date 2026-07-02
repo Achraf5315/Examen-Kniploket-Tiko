@@ -56,7 +56,13 @@ class BestellingController extends Controller
             'Status' => 'required|string|max:30',
         ]);
 
-        $this->bestelling->createBestelling($validatedData);
+        try {
+            $this->bestelling->createBestelling($validatedData);
+            Log::info('Bestelling opgeslagen', ['bestelling' => $validatedData]);
+        } catch (\Exception $e) {
+            Log::error('Fout bij het opslaan van bestelling: '.$e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Er is een fout opgetreden bij het opslaan van de bestelling.']);
+        }
 
         return redirect()->route('bestellingen.index')->with('success', 'Bestelling opgeslagen.');
     }
