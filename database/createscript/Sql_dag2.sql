@@ -7,19 +7,42 @@ CREATE TABLE Gebruiker (
     Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     Email VARCHAR(255) NOT NULL UNIQUE,
     Wachtwoord VARCHAR(255) NOT NULL,
-    IsActief TINYINT(1) NOT NULL DEFAULT 1,
+    IsActief BIT NOT NULL DEFAULT 1,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 2. Klant
+-- 2. Rol
+CREATE TABLE Rol (
+    Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Rolnaam VARCHAR(30) NOT NULL,
+    IsActief BIT NOT NULL,
+    Opmerking VARCHAR(255) NULL,
+    DatumAangemaakt DATETIME NOT NULL,
+    DatumGewijzigd DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 3. RolPerGebruiker
+CREATE TABLE RolPerGebruiker (
+    Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    GebruikerId INT UNSIGNED NOT NULL,
+    RolId INT UNSIGNED NOT NULL,
+    IsActief BIT NOT NULL,
+    Opmerking VARCHAR(255) NULL,
+    DatumAangemaakt DATETIME NOT NULL,
+    DatumGewijzigd DATETIME NOT NULL,
+    FOREIGN KEY (GebruikerId) REFERENCES Gebruiker (Id),
+    FOREIGN KEY (RolId) REFERENCES Rol (Id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 4. Klant
 CREATE TABLE Klant (
     Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     GebruikerId INT UNSIGNED NOT NULL,
     Naam VARCHAR(150) NOT NULL,
     Telefoonnummer VARCHAR(20) NOT NULL,
     WensenAllergieen VARCHAR(100) NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -35,7 +58,7 @@ CREATE TABLE Adres (
     Toevoeging VARCHAR(10) NULL,
     Postcode VARCHAR(10) NOT NULL,
     Plaats VARCHAR(100) NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -46,7 +69,7 @@ CREATE TABLE Adres (
 CREATE TABLE Categorie (
     Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     Naam VARCHAR(150) NOT NULL UNIQUE,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL
@@ -57,7 +80,7 @@ CREATE TABLE Leverancier (
     Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     Naam VARCHAR(100) NOT NULL,
     Telefoonnummer VARCHAR(20) NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL
@@ -72,7 +95,7 @@ CREATE TABLE Product (
     Prijs DECIMAL(6, 2) NOT NULL,
     Voorraad SMALLINT NOT NULL,
     MinimumVoorraad SMALLINT NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -84,7 +107,7 @@ CREATE TABLE ProductPerLeverancier (
     Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ProductId INT UNSIGNED NOT NULL,
     LeverancierId INT UNSIGNED NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -98,7 +121,7 @@ CREATE TABLE Behandeling (
     Naam VARCHAR(100) NOT NULL,
     Prijs DECIMAL(6, 2) NOT NULL,
     DuurMinuten SMALLINT NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL
@@ -110,7 +133,7 @@ CREATE TABLE BehandelingPerProduct (
     BehandelingId INT UNSIGNED NOT NULL,
     ProductId INT UNSIGNED NOT NULL,
     Aantal SMALLINT NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -126,7 +149,7 @@ CREATE TABLE Medewerker (
     Naam VARCHAR(100) NOT NULL,
     Telefoonnummer VARCHAR(20) NOT NULL,
     Specialisaties VARCHAR(50) NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -139,7 +162,7 @@ CREATE TABLE MedewerkerPerBehandeling (
     Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     MedewerkerId INT UNSIGNED NOT NULL,
     BehandelingId INT UNSIGNED NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -154,7 +177,7 @@ CREATE TABLE Werktijd (
     Dag VARCHAR(10) NOT NULL,
     Starttijd TIME NOT NULL,
     Eindtijd TIME NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -170,7 +193,7 @@ CREATE TABLE Afspraak (
     Datum DATE NOT NULL,
     Starttijd TIME NOT NULL,
     Status VARCHAR(20) NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -187,7 +210,7 @@ CREATE TABLE Bestelling (
     Orderdatum DATE NOT NULL,
     VerwachteLeverdatum DATE NULL,
     Status VARCHAR(30) NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
@@ -201,7 +224,7 @@ CREATE TABLE Bestelregel (
     BestellingId INT UNSIGNED NOT NULL,
     Aantal INT NOT NULL,
     PrijsPerStuk DECIMAL(6, 2) NOT NULL,
-    IsActief TINYINT(1) NOT NULL,
+    IsActief BIT NOT NULL,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME NOT NULL,
     DatumGewijzigd DATETIME NOT NULL,
