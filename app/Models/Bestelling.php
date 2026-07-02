@@ -51,6 +51,11 @@ class Bestelling extends TikoModel
         );
     }
 
+    public function findBestellingById(int $id)
+    {
+        return DB::selectOne('CALL sp_findBestellingById(?)', [$id]);
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'ProductId', 'Id');

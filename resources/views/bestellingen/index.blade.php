@@ -49,6 +49,10 @@
                                 class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                                 Status
                             </th>
+                            <th
+                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                Wijzigen
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,6 +87,9 @@
                                             echo '<span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">Geannuleerd</span>';
                                         }
                                     @endphp
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle">
+                                    <a href="{{ route('bestellingen.edit', $bestelling->Id) }}" class="text-blue-600 hover:text-blue-900">Wijzigen</a>
                                 </td>
                             </tr>
                         @empty
