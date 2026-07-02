@@ -14,7 +14,7 @@ return new class extends Migration
 
         // 2. Klant
         Schema::create('Klant', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('GebruikerId');
             $table->string('Naam', 150);
             $table->string('Telefoonnummer', 20);
@@ -23,13 +23,12 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker');
+            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker')->onDelete('cascade');
         });
-        
 
         // 3. Adres
         Schema::create('Adres', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('KlantId');
             $table->string('Straatnaam', 100);
             $table->smallInteger('Huisnummer');
@@ -40,12 +39,12 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('KlantId')->references('Id')->on('Klant');
+            $table->foreign('KlantId')->references('Id')->on('Klant')->onDelete('cascade');
         });
 
         // 4. Categorie
         Schema::create('Categorie', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Naam', 150)->unique();
             $table->tinyInteger('IsActief');
             $table->string('Opmerking', 255)->nullable();
@@ -55,7 +54,7 @@ return new class extends Migration
 
         // 5. Leverancier
         Schema::create('Leverancier', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Naam', 100);
             $table->string('Telefoonnummer', 20);
             $table->tinyInteger('IsActief');
@@ -66,7 +65,7 @@ return new class extends Migration
 
         // 6. Product
         Schema::create('Product', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Productnaam', 100);
             $table->string('EanCode', 20)->unique();
             $table->unsignedInteger('CategorieId');
@@ -77,25 +76,25 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('CategorieId')->references('Id')->on('Categorie');
+            $table->foreign('CategorieId')->references('Id')->on('Categorie')->onDelete('cascade');
         });
 
         // 7. ProductPerLeverancier
         Schema::create('ProductPerLeverancier', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('ProductId');
             $table->unsignedInteger('LeverancierId');
             $table->tinyInteger('IsActief');
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('ProductId')->references('Id')->on('Product');
-            $table->foreign('LeverancierId')->references('Id')->on('Leverancier');
+            $table->foreign('ProductId')->references('Id')->on('Product')->onDelete('cascade');
+            $table->foreign('LeverancierId')->references('Id')->on('Leverancier')->onDelete('cascade');
         });
 
         // 8. Behandeling
         Schema::create('Behandeling', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->string('Naam', 100);
             $table->decimal('Prijs', 6, 2);
             $table->smallInteger('DuurMinuten');
@@ -107,7 +106,7 @@ return new class extends Migration
 
         // 9. BehandelingPerProduct
         Schema::create('BehandelingPerProduct', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('BehandelingId');
             $table->unsignedInteger('ProductId');
             $table->smallInteger('Aantal');
@@ -115,13 +114,13 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('BehandelingId')->references('Id')->on('Behandeling');
-            $table->foreign('ProductId')->references('Id')->on('Product');
+            $table->foreign('BehandelingId')->references('Id')->on('Behandeling')->onDelete('cascade');
+            $table->foreign('ProductId')->references('Id')->on('Product')->onDelete('cascade');
         });
 
         // 10. Medewerker
         Schema::create('Medewerker', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('GebruikerId');
             $table->unsignedInteger('AdresId');
             $table->string('Naam', 100);
@@ -131,26 +130,26 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker');
-            $table->foreign('AdresId')->references('Id')->on('Adres');
+            $table->foreign('GebruikerId')->references('Id')->on('Gebruiker')->onDelete('cascade');
+            $table->foreign('AdresId')->references('Id')->on('Adres')->onDelete('cascade');
         });
 
         // 11. MedewerkerPerBehandeling
         Schema::create('MedewerkerPerBehandeling', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('MedewerkerId');
             $table->unsignedInteger('BehandelingId');
             $table->tinyInteger('IsActief');
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker');
-            $table->foreign('BehandelingId')->references('Id')->on('Behandeling');
+            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker')->onDelete('cascade');
+            $table->foreign('BehandelingId')->references('Id')->on('Behandeling')->onDelete('cascade');
         });
 
         // 12. Werktijd
         Schema::create('Werktijd', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('MedewerkerId');
             $table->string('Dag', 10);
             $table->time('Starttijd');
@@ -159,12 +158,12 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker');
+            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker')->onDelete('cascade');
         });
 
         // 13. Afspraak
         Schema::create('Afspraak', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('KlantId');
             $table->unsignedInteger('MedewerkerId');
             $table->unsignedInteger('BehandelingId');
@@ -175,14 +174,14 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('KlantId')->references('Id')->on('Klant');
-            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker');
-            $table->foreign('BehandelingId')->references('Id')->on('Behandeling');
+            $table->foreign('KlantId')->references('Id')->on('Klant')->onDelete('cascade');
+            $table->foreign('MedewerkerId')->references('Id')->on('Medewerker')->onDelete('cascade');
+            $table->foreign('BehandelingId')->references('Id')->on('Behandeling')->onDelete('cascade');
         });
 
         // 14. Bestelling
         Schema::create('Bestelling', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('ProductId');
             $table->unsignedInteger('KlantId');
             $table->date('Orderdatum');
@@ -192,13 +191,13 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('ProductId')->references('Id')->on('Product');
-            $table->foreign('KlantId')->references('Id')->on('Klant');
+            $table->foreign('ProductId')->references('Id')->on('Product')->onDelete('cascade');
+            $table->foreign('KlantId')->references('Id')->on('Klant')->onDelete('cascade');
         });
 
         // 15. Bestelregel
         Schema::create('Bestelregel', function (Blueprint $table) {
-            $table->unsignedInteger('Id')->primary()->autoIncrement();
+            $table->increments('Id');
             $table->unsignedInteger('BestellingId');
             $table->integer('Aantal');
             $table->decimal('PrijsPerStuk', 6, 2);
@@ -206,7 +205,7 @@ return new class extends Migration
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
-            $table->foreign('BestellingId')->references('Id')->on('Bestelling');
+            $table->foreign('BestellingId')->references('Id')->on('Bestelling')->onDelete('cascade');
         });
     }
 
