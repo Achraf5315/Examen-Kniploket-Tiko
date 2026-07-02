@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\RolPerGebruiker;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,44 +18,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            RolSeeder::class,
-        ]);
-
         // eigenaar account
-        $owner = User::factory()->create([
-            'name' => 'Eigenaar',
-            'email' => 'eigenaar@tiko.com',
-            'password' => Hash::make('achraf123'),
-        ]);
-
-        $eigenaarRoleId = DB::table('Rol')->where('Rolnaam', 'Eigenaar')->value('Id');
-
-        DB::table('RolPerGebruiker')->insert([
-            'GebruikerId' => $owner->getKey(),
-            'RolId' => $eigenaarRoleId,
+        User::create([
+            'Gebruikersnaam' => 'Eigenaar',
+            'Email' => 'eigenaar@tiko.com',
+            'Wachtwoord' => Hash::make('achraf123'),
             'IsActief' => true,
-            'Opmerking' => null,
             'DatumAangemaakt' => now(),
             'DatumGewijzigd' => now(),
         ]);
-
-        $this->call([
-            KlantSeeder::class,
-            AdresSeeder::class,
-            CategorieSeeder::class,
-            LeverancierSeeder::class,
-            ProductSeeder::class,
-            ProductPerLeverancierSeeder::class,
-            BehandelingSeeder::class,
-            BehandelingPerProductSeeder::class,
-            MedewerkerSeeder::class,
-            MedewerkerPerBehandelingSeeder::class,
-            WerktijdSeeder::class,
-            AfspraakSeeder::class,
-            BestellingSeeder::class,
-            BestelregelSeeder::class,
-        ]);
-
+        $this->call(DummyDataSeeder::class);
     }
 }
