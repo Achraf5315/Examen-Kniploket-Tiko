@@ -28,7 +28,7 @@ Route::get('/bestellingen/{bestelling}/edit', [BestellingController::class, 'edi
 ->name('bestellingen.edit')
 ->middleware(['auth', 'verified']);
 
-Route::put('/bestellingen/{bestelling}', [BestellingController::class, 'update'])
+Route::post('/bestellingen/{bestelling}', [BestellingController::class, 'update'])
 ->name('bestellingen.update')
 ->middleware(['auth', 'verified']);
 

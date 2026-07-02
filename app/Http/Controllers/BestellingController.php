@@ -124,4 +124,57 @@ class BestellingController extends Controller
             'klanten' => $klanten,
         ]);
     }
+
+    public function update(Request $request, $id)
+    {
+        // data valideren die we binnenkrijgen van de form
+        $validatedData = $request->validate([
+            'ProductNaam' => 'required|exists:Product,Id',
+            'KlantNaam' => 'required|exists:Klant,Id',
+            'Orderdatum' => 'required|date',
+            'VerwachteLeverdatum' => 'required|date',
+            'Status' => 'required|string|max:30',
+        ]);
+
+        $updateData = [
+            'ProductId' => $validatedData['ProductNaam'],
+            'KlantId' => $validatedData['KlantNaam'],
+            'Orderdatum' => $validatedData['Orderdatum'],
+            'VerwachteLeverdatum' => $validatedData['VerwachteLeverdatum'],
+            'Status' => $validatedData['Status'],
+        ];
+
+        // Controleer of de verwachte leverdatum minimaal 2 dagen in de toekomst ligt
+        try {
+            $verwachte = Carbon::parse($validatedData['VerwachteLeverdatum']);
+        } catch (\Exception $e) {
+            Log::error('Ongeldige datum voor VerwachteLeverdatum: '.$validatedData['VerwachteLeverdatum']);
+
+            return redirect()->back()->with(['error','Ongeldige datum voor VerwachteLeverdatum.']);
+        }
+
+        // Log een waarschuwing als de verwachte leverdatum te vroeg is
+        if ($verwachte->lt(Carbon::now()->addDays(2))) {
+            Log::warning('Verwachte leverdatum is te vroeg', ['VerwachteLeverdatum' => $validatedData['VerwachteLeverdatum']]);
+            
+            session()->flash('error', 'De verwachte leverdatum moet minimaal 2 dagen na de orderdatum liggen.');
+
+            return redirect()->back();
+        }
+
+        // Probeer de bestelling bij te werken en log eventuele fouten
+        try {
+            $this->bestelling->updateBestelling($id, $updateData);
+            Log::info('Bestelling bijgewerkt', ['bestelling' => $updateData]);
+        } catch (\Exception $e) {
+            Log::error('Fout bij het bijwerken van bestelling: '.$e->getMessage());
+
+            return redirect()->back()->with('error', 'Er is een fout opgetreden bij het bijwerken van de bestelling.');
+        }
+
+        // Redirect naar de indexpagina met een succesbericht
+        session()->flash('success', 'Bestelling bijgewerkt.');
+
+        return redirect()->route('bestellingen.index');
+    }
 }
