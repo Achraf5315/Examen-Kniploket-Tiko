@@ -14,24 +14,16 @@
             <p class="fs-5 text-secondary">Of bestel je haarproducten en haal ze op in de salon.</p>
 
             @auth
-                @php
-                    $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                @endphp
-
-                @if ($heeftAfsprakenRol)
-                    <div class="d-flex flex-wrap gap-3 mt-4">
-                        <a href="{{ route('afspraken.create') }}" class="btn btn-dark btn-lg">Afspraak maken</a>
-                        <a href="#" class="btn btn-outline-dark btn-lg">Bekijk behandelingen</a>
-                    </div>
-                @endif
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{{ route('afspraken.create') }}" class="btn btn-dark btn-lg">Afspraak maken</a>
+                    <a href="{{ route('products.index') }}" class="btn btn-outline-dark btn-lg">Bekijk producten</a>
+                </div>
             @endauth
         </div>
 
         <div class="col-lg-6">
             {{-- Afbeeldingsplaceholder zoals in de wireframe --}}
-            <div class="border rounded bg-light d-flex align-items-center justify-content-center" style="height: 320px;">
-                <span class="text-secondary">Afbeelding (salon)</span>
-            </div>
+            <img src="{{ asset('images/salon-hero.jpg') }}" alt="Kniploket Tiko Salon" class="border rounded img-fluid" style="height: 320px; object-fit: cover;">
         </div>
     </div>
 
@@ -43,19 +35,11 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <div class="border rounded bg-light d-flex align-items-center justify-content-center mb-3" style="height: 140px;">
-                        <span class="text-secondary">Afbeelding</span>
-                    </div>
+                    <img src="{{ asset('images/behandeling.jpg') }}" alt="Behandelingen" class="border rounded w-100 mb-3" style="height: 140px; object-fit: cover;">
                     <h3 class="h5 card-title">Behandelingen</h3>
                     <p class="card-text text-secondary">Bekijk knippen, kleuren, stylen en meer.</p>
                     @auth
-                        @php
-                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            <a href="#" class="fw-semibold text-decoration-none text-dark">Bekijk aanbod &rsaquo;</a>
-                        @endif
+                        <a href="{{ route('behandelingen.index') }}" class="fw-semibold text-decoration-none text-dark">Bekijk aanbod &rsaquo;</a>
                     @endauth
                 </div>
             </div>
@@ -64,19 +48,11 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <div class="border rounded bg-light d-flex align-items-center justify-content-center mb-3" style="height: 140px;">
-                        <span class="text-secondary">Afbeelding</span>
-                    </div>
+                    <img src="{{ asset('images/producten.jpg') }}" alt="Producten" class="border rounded w-100 mb-3" style="height: 140px; object-fit: cover;">
                     <h3 class="h5 card-title">Producten bestellen</h3>
                     <p class="card-text text-secondary">Bestel online en haal op in de salon.</p>
                     @auth
-                        @php
-                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            <a href="#" class="fw-semibold text-decoration-none text-dark">Naar de shop &rsaquo;</a>
-                        @endif
+                        <a href="{{ route('products.index') }}" class="fw-semibold text-decoration-none text-dark">Naar de shop &rsaquo;</a>
                     @endauth
                 </div>
             </div>
@@ -85,19 +61,11 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <div class="border rounded bg-light d-flex align-items-center justify-content-center mb-3" style="height: 140px;">
-                        <span class="text-secondary">Afbeelding</span>
-                    </div>
+                    <img src="{{ asset('images/afspraken.jpg') }}" alt="Afspraken" class="border rounded w-100 mb-3" style="height: 140px; object-fit: cover;">
                     <h3 class="h5 card-title">Mijn afspraken</h3>
                     <p class="card-text text-secondary">Bekijk, wijzig of annuleer je afspraken.</p>
                     @auth
-                        @php
-                            $heeftAfsprakenRol = auth()->user()->rollen()->whereIn('Rol.Rolnaam', ['Admin', 'Medewerker'])->where('Rol.IsActief', 1)->wherePivot('IsActief', 1)->exists();
-                        @endphp
-
-                        @if ($heeftAfsprakenRol)
-                            <a href="{{ route('dashboard') }}" class="fw-semibold text-decoration-none text-dark">Mijn account &rsaquo;</a>
-                        @endif
+                        <a href="{{ route('dashboard') }}" class="fw-semibold text-decoration-none text-dark">Mijn account &rsaquo;</a>
                     @endauth
                 </div>
             </div>
