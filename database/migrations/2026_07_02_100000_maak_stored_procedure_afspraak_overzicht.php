@@ -19,33 +19,13 @@ return new class extends Migration
         // Verwijder de procedure eerst als die al bestaat, zodat de migratie herhaalbaar is
         DB::unprepared('DROP PROCEDURE IF EXISTS spAfspraakOverzicht');
 
-        DB::unprepared(<<<'SQL'
-            CREATE PROCEDURE spAfspraakOverzicht()
-            BEGIN
-                -- Overzicht van alle actieve afspraken met klant, medewerker en behandeling
-                SELECT
-                    a.Id,
-                    a.KlantId,
-                    k.Naam AS KlantNaam,
-                    a.MedewerkerId,
-                    m.Naam AS MedewerkerNaam,
-                    a.BehandelingId,
-                    b.Naam AS BehandelingNaam,
-                    b.DuurMinuten,
-                    a.Datum,
-                    a.Starttijd,
-                    -- De eindtijd wordt berekend met de duur van de behandeling
-                    ADDTIME(a.Starttijd, SEC_TO_TIME(b.DuurMinuten * 60)) AS Eindtijd,
-                    a.Status,
-                    a.Opmerking
-                FROM Afspraak a
-                INNER JOIN Klant k ON k.Id = a.KlantId
-                INNER JOIN Medewerker m ON m.Id = a.MedewerkerId
-                INNER JOIN Behandeling b ON b.Id = a.BehandelingId
-                WHERE a.IsActief = 1
-                ORDER BY a.Datum ASC, a.Starttijd ASC;
-            END
-            SQL);
+        $sql = file_get_contents(base_path('database/createscript/stored_procedures/sp_afspraak_overzicht.sql'));
+
+        if ($sql === false) {
+            throw new \RuntimeException('SQL-bestand voor spAfspraakOverzicht kon niet worden geladen.');
+        }
+
+        DB::unprepared($sql);
     }
 
     /**

@@ -47,6 +47,14 @@ class AfspraakVerwijderenRequest extends FormRequest
     }
 
     /**
+     * Redirect na validatiefouten terug naar het overzicht en open de juiste modal opnieuw.
+     */
+    protected function getRedirectUrl(): string
+    {
+        return route('afspraken.delete', $this->route('id'));
+    }
+
+    /**
      * Nederlandse veldnamen voor in de foutmeldingen.
      *
      * @return array<string, string>

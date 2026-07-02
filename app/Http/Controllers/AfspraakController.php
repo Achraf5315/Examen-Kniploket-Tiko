@@ -86,9 +86,9 @@ class AfspraakController extends Controller
     {
         try {
             // Keuzelijsten voor het formulier: alleen actieve klanten, medewerkers en behandelingen
-            $klanten = Klant::where('IsActief', 1)->orderBy('Naam')->get();
-            $medewerkers = Medewerker::where('IsActief', 1)->orderBy('Naam')->get();
-            $behandelingen = Behandeling::where('IsActief', 1)->orderBy('Naam')->get();
+            $klanten = Klant::query()->where('IsActief', 1)->orderBy('Naam')->get();
+            $medewerkers = Medewerker::query()->where('IsActief', 1)->orderBy('Naam')->get();
+            $behandelingen = Behandeling::query()->where('IsActief', 1)->orderBy('Naam')->get();
 
             Log::info('Formulier afspraak toevoegen geopend.');
 
@@ -130,6 +130,16 @@ class AfspraakController extends Controller
                 ->route('afspraken.index')
                 ->with('succes', 'De afspraak is succesvol toegevoegd.');
         } catch (QueryException $fout) {
+            if ($this->isVerledenFout($fout)) {
+                Log::warning('Afspraak toevoegen geweigerd: datum of starttijd ligt in het verleden.', [
+                    'invoer' => $request->validated(),
+                ]);
+
+                return back()
+                    ->withInput()
+                    ->with('fout', 'Je kunt alleen afspraken vanaf vandaag inplannen.');
+            }
+
             // Scenario: de afspraak overlapt met een bestaande afspraak (SIGNAL uit de stored procedure)
             if ($this->isOverlapFout($fout)) {
                 Log::warning('Afspraak toevoegen geweigerd: overlap met een bestaande afspraak.', [
@@ -179,9 +189,9 @@ class AfspraakController extends Controller
             }
 
             // Keuzelijsten voor het formulier: alleen actieve klanten, medewerkers en behandelingen
-            $klanten = Klant::where('IsActief', 1)->orderBy('Naam')->get();
-            $medewerkers = Medewerker::where('IsActief', 1)->orderBy('Naam')->get();
-            $behandelingen = Behandeling::where('IsActief', 1)->orderBy('Naam')->get();
+            $klanten = Klant::query()->where('IsActief', 1)->orderBy('Naam')->get();
+            $medewerkers = Medewerker::query()->where('IsActief', 1)->orderBy('Naam')->get();
+            $behandelingen = Behandeling::query()->where('IsActief', 1)->orderBy('Naam')->get();
 
             Log::info('Formulier afspraak wijzigen geopend.', ['afspraak_id' => $id]);
 
@@ -225,6 +235,17 @@ class AfspraakController extends Controller
                 ->route('afspraken.index')
                 ->with('succes', 'De afspraak is succesvol gewijzigd.');
         } catch (QueryException $fout) {
+            if ($this->isVerledenFout($fout)) {
+                Log::warning('Afspraak wijzigen geweigerd: datum of starttijd ligt in het verleden.', [
+                    'afspraak_id' => $id,
+                    'invoer' => $request->validated(),
+                ]);
+
+                return back()
+                    ->withInput()
+                    ->with('fout', 'Je kunt alleen afspraken vanaf vandaag inplannen.');
+            }
+
             // Scenario: de gewijzigde afspraak overlapt met een bestaande afspraak
             if ($this->isOverlapFout($fout)) {
                 Log::warning('Afspraak wijzigen geweigerd: overlap met een bestaande afspraak.', [
@@ -269,12 +290,14 @@ class AfspraakController extends Controller
     }
 
     /**
-     * Toont de bevestigingspagina voor het verwijderen van een afspraak (Delete).
+     * Toont de compatibiliteitspagina voor het verwijderen van een afspraak.
+     *
+     * De primaire gebruikersflow loopt via de modal op het overzicht, maar
+     * deze route blijft bestaan voor oudere links en bestaande tests.
      */
     public function delete(int $id): View|RedirectResponse
     {
         try {
-            // Haal de afspraak op zodat de gebruiker ziet wat er verwijderd wordt
             $afspraak = Afspraak::getAfspraakById($id);
 
             if ($afspraak === null) {
@@ -286,8 +309,6 @@ class AfspraakController extends Controller
                     ->route('afspraken.index')
                     ->with('fout', 'De afspraak is niet gevonden.');
             }
-
-            Log::info('Bevestigingspagina afspraak verwijderen geopend.', ['afspraak_id' => $id]);
 
             return view('Afspraak.Verwijderen', ['afspraak' => $afspraak]);
         } catch (Throwable $fout) {
@@ -363,6 +384,15 @@ class AfspraakController extends Controller
     {
         return ($fout->errorInfo[1] ?? null) === 1644
             && str_contains($fout->getMessage(), 'overlapt');
+    }
+
+    /**
+     * Controleert of de databasefout aangeeft dat de gekozen datum of starttijd al voorbij is.
+     */
+    private function isVerledenFout(QueryException $fout): bool
+    {
+        return ($fout->errorInfo[1] ?? null) === 1644
+            && str_contains($fout->getMessage(), 'verleden');
     }
 
     /**

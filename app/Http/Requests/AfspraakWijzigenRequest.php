@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * Form Request voor het valideren van een te wijzigen afspraak.
@@ -28,12 +31,49 @@ class AfspraakWijzigenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'KlantId' => ['required', 'integer', 'exists:Klant,Id'],
-            'MedewerkerId' => ['required', 'integer', 'exists:Medewerker,Id'],
-            'BehandelingId' => ['required', 'integer', 'exists:Behandeling,Id'],
-            'Datum' => ['required', 'date'],
+            'KlantId' => [
+                'required',
+                'integer',
+                Rule::exists('Klant', 'Id')->where(fn ($query) => $query->where('IsActief', 1)),
+            ],
+            'MedewerkerId' => [
+                'required',
+                'integer',
+                Rule::exists('Medewerker', 'Id')->where(fn ($query) => $query->where('IsActief', 1)),
+            ],
+            'BehandelingId' => [
+                'required',
+                'integer',
+                Rule::exists('Behandeling', 'Id')->where(fn ($query) => $query->where('IsActief', 1)),
+            ],
+            'Datum' => ['required', 'date', 'after_or_equal:today'],
             'Starttijd' => ['required', 'date_format:H:i'],
         ];
+    }
+
+    /**
+     * Extra validatie voor afspraken op dezelfde dag en in het verleden.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $datum = $this->input('Datum');
+            $starttijd = $this->input('Starttijd');
+
+            if (! is_string($datum) || ! is_string($starttijd)) {
+                return;
+            }
+
+            try {
+                $moment = Carbon::createFromFormat('Y-m-d H:i', $datum.' '.$starttijd);
+            } catch (\Throwable) {
+                return;
+            }
+
+            if ($moment->isPast()) {
+                $validator->errors()->add('Starttijd', 'Kies een starttijd die nog niet voorbij is.');
+            }
+        });
     }
 
     /**
@@ -52,6 +92,7 @@ class AfspraakWijzigenRequest extends FormRequest
             'BehandelingId.exists' => 'De gekozen behandeling bestaat niet.',
             'Datum.required' => 'Vul een datum in.',
             'Datum.date' => 'Vul een geldige datum in.',
+            'Datum.after_or_equal' => 'Plan alleen afspraken vanaf vandaag in.',
             'Starttijd.required' => 'Vul een starttijd in.',
             'Starttijd.date_format' => 'Vul een geldige starttijd in (uu:mm).',
         ];

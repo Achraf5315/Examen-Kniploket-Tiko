@@ -38,8 +38,9 @@ Route::middleware(['auth', 'rol:Admin,Medewerker'])->group(function () {
     Route::get('/afspraken/{id}/wijzigen', [AfspraakController::class, 'edit'])->whereNumber('id')->name('afspraken.edit');
     Route::put('/afspraken/{id}', [AfspraakController::class, 'update'])->whereNumber('id')->name('afspraken.update');
 
-    // Afspraak verwijderen (Delete): bevestigingspagina tonen en definitief verwijderen
+    // Verwijderlink blijft bestaan en opent nu de bevestigingsmodal op het overzicht
     Route::get('/afspraken/{id}/verwijderen', [AfspraakController::class, 'delete'])->whereNumber('id')->name('afspraken.delete');
+
     Route::delete('/afspraken/{id}', [AfspraakController::class, 'destroy'])->whereNumber('id')->name('afspraken.destroy');
 });
 

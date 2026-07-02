@@ -20,33 +20,13 @@ return new class extends Migration
         // Verwijder de procedure eerst als die al bestaat, zodat de migratie herhaalbaar is
         DB::unprepared('DROP PROCEDURE IF EXISTS spAfspraakVerwijderen');
 
-        DB::unprepared(<<<'SQL'
-            CREATE PROCEDURE spAfspraakVerwijderen(
-                IN p_Id INT UNSIGNED
-            )
-            BEGIN
-                DECLARE v_AantalGevonden INT DEFAULT 0;
+        $sql = file_get_contents(base_path('database/createscript/stored_procedures/sp_afspraak_verwijderen.sql'));
 
-                -- Controleer eerst of de afspraak bestaat (JOIN met Klant als integriteitscontrole)
-                SELECT COUNT(*)
-                INTO v_AantalGevonden
-                FROM Afspraak a
-                INNER JOIN Klant k ON k.Id = a.KlantId
-                WHERE a.Id = p_Id;
+        if ($sql === false) {
+            throw new \RuntimeException('SQL-bestand voor spAfspraakVerwijderen kon niet worden geladen.');
+        }
 
-                IF v_AantalGevonden = 0 THEN
-                    -- Niet gevonden: geef een duidelijke foutmelding terug aan de applicatie
-                    SIGNAL SQLSTATE '45000'
-                        SET MESSAGE_TEXT = 'De afspraak is niet gevonden';
-                END IF;
-
-                -- Verwijder de afspraak definitief; dit kan niet ongedaan worden gemaakt
-                DELETE a
-                FROM Afspraak a
-                INNER JOIN Klant k ON k.Id = a.KlantId
-                WHERE a.Id = p_Id;
-            END
-            SQL);
+        DB::unprepared($sql);
     }
 
     /**
