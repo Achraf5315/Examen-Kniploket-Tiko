@@ -13,14 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         // DROP IF EXISTS voor idempotentie in RefreshDatabase (tests).
-        DB::unprepared('DROP PROCEDURE IF EXISTS GetAllBestellingen');
-        DB::unprepared('DROP PROCEDURE IF EXISTS FindBestellingById');
-        DB::unprepared('DROP PROCEDURE IF EXISTS CreateBestelling');
-        DB::unprepared('DROP PROCEDURE IF EXISTS UpdateBestelling');
-        DB::unprepared('DROP PROCEDURE IF EXISTS DeleteBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_GetAllBestellingen');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_FindBestellingById');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_CreateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_UpdateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_DeleteBestelling');
 
         DB::unprepared('
-            CREATE PROCEDURE GetAllBestellingen()
+            CREATE PROCEDURE sp_GetAllBestellingen()
             BEGIN
                 SELECT b.Id, b.Orderdatum, b.Status, p.Productnaam, k.Naam AS KlantNaam
                 FROM Bestelling b
@@ -30,7 +30,7 @@ return new class extends Migration
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE FindBestellingById(IN bestellingId INT)
+            CREATE PROCEDURE sp_FindBestellingById(IN bestellingId INT)
             BEGIN
                 SELECT b.Id, b.Orderdatum, b.Status, p.Productnaam, k.Naam AS KlantNaam
                 FROM Bestelling b
@@ -41,27 +41,29 @@ return new class extends Migration
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE CreateBestelling(IN productId INT, IN klantId INT, IN orderdatum DATE, IN status VARCHAR(255))
+            CREATE PROCEDURE sp_CreateBestelling(IN productId INT, IN klantId INT, IN orderdatum DATE, IN verwachteLeverdatum DATE, IN status VARCHAR(255))
             BEGIN
-                INSERT INTO Bestelling (ProductId, KlantId, Orderdatum, Status)
-                VALUES (productId, klantId, orderdatum, status);
+                INSERT INTO Bestelling (ProductId, KlantId, Orderdatum, VerwachteLeverdatum, Status)
+                VALUES (productId, klantId, orderdatum, verwachteLeverdatum, status);
             END
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE UpdateBestelling(IN bestellingId INT, IN productId INT, IN klantId INT, IN orderdatum DATE, IN status VARCHAR(255))
+            CREATE PROCEDURE sp_UpdateBestelling(IN bestellingId INT, IN klantId INT, IN productId INT, IN orderdatum DATE, IN verwachteLeverdatum DATE, IN status VARCHAR(255), IN opmerking VARCHAR(255))
             BEGIN
                 UPDATE Bestelling
                 SET ProductId = productId,
                     KlantId = klantId,
                     Orderdatum = orderdatum,
-                    Status = status
+                    VerwachteLeverdatum = verwachteLeverdatum,
+                    Status = status,
+                    Opmerking = opmerking
                 WHERE Id = bestellingId;
             END
         ');
 
         DB::unprepared('
-            CREATE PROCEDURE DeleteBestelling(IN bestellingId INT)
+            CREATE PROCEDURE sp_DeleteBestelling(IN bestellingId INT)
             BEGIN
                 DELETE FROM Bestelling WHERE Id = bestellingId;
             END
@@ -73,10 +75,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::unprepared('DROP PROCEDURE IF EXISTS GetAllBestellingen');
-        DB::unprepared('DROP PROCEDURE IF EXISTS FindBestellingById');
-        DB::unprepared('DROP PROCEDURE IF EXISTS CreateBestelling');
-        DB::unprepared('DROP PROCEDURE IF EXISTS UpdateBestelling');
-        DB::unprepared('DROP PROCEDURE IF EXISTS DeleteBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_GetAllBestellingen');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_FindBestellingById');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_CreateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_UpdateBestelling');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_DeleteBestelling');
     }
 };
