@@ -190,4 +190,81 @@ class AfspraakControllerTest extends TestCase
         $reactie->assertRedirect(route('afspraken.create'));
         $reactie->assertSessionHasErrors(['KlantId', 'MedewerkerId', 'BehandelingId', 'Datum', 'Starttijd']);
     }
+
+    // ---------- Feature: Afspraak Wijzigen ----------
+
+    /**
+     * Het wijzigformulier toont de bestaande gegevens van de afspraak.
+     */
+    public function test_wijzigen_formulier_toont_bestaande_gegevens(): void
+    {
+        // Afspraak 1 uit de seeder: Sanne Visser bij Lisa van der Meer op 2026-07-10 om 10:00
+        $reactie = $this->actingAs($this->eigenaar())->get(route('afspraken.edit', 1));
+
+        $reactie->assertOk();
+        $reactie->assertViewIs('Afspraak.Wijzigen');
+        $reactie->assertSee('Afspraak Wijzigen');
+        $reactie->assertSee('value="2026-07-10"', false);
+        $reactie->assertSee('value="10:00"', false);
+    }
+
+    /**
+     * Scenario: een afspraak wordt succesvol gewijzigd.
+     */
+    public function test_afspraak_wijzigen_lukt_met_geldige_gegevens(): void
+    {
+        // Verplaats afspraak 1 naar 15:00; medewerker 1 heeft dan geen andere afspraak
+        $reactie = $this->actingAs($this->eigenaar())->put(route('afspraken.update', 1), [
+            'KlantId' => 1,
+            'MedewerkerId' => 1,
+            'BehandelingId' => 1,
+            'Datum' => '2026-07-10',
+            'Starttijd' => '15:00',
+        ]);
+
+        $reactie->assertRedirect(route('afspraken.index'));
+        $reactie->assertSessionHas('succes');
+
+        // De wijziging staat in de database
+        $this->assertDatabaseHas('Afspraak', [
+            'Id' => 1,
+            'Starttijd' => '15:00:00',
+        ]);
+    }
+
+    /**
+     * Scenario: een afspraak wijzigen lukt niet vanwege overlap.
+     */
+    public function test_afspraak_wijzigen_faalt_bij_overlap(): void
+    {
+        // Afspraak 2 is bij Tom Hendriks (medewerker 2) op 2026-07-10 van 11:30 tot 12:00.
+        // Afspraak 1 verplaatsen naar medewerker 2 om 11:45 levert dus overlap op.
+        $reactie = $this->actingAs($this->eigenaar())->put(route('afspraken.update', 1), [
+            'KlantId' => 1,
+            'MedewerkerId' => 2,
+            'BehandelingId' => 1,
+            'Datum' => '2026-07-10',
+            'Starttijd' => '11:45',
+        ]);
+
+        $reactie->assertSessionHas('fout', 'De afspraak overlapt met een bestaande afspraak.');
+
+        // De oorspronkelijke afspraak is niet gewijzigd
+        $this->assertDatabaseHas('Afspraak', [
+            'Id' => 1,
+            'MedewerkerId' => 1,
+            'Starttijd' => '10:00:00',
+        ]);
+    }
+
+    /**
+     * Het wijzigen van een onbekende afspraak geeft een nette melding.
+     */
+    public function test_wijzigen_van_onbekende_afspraak_geeft_melding(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())->get(route('afspraken.edit', 999));
+
+        $reactie->assertRedirect(route('afspraken.index'));
+        $reactie->assertSessionHas('fout', 'De afspraak is niet gevonden.');
+    }
 }
