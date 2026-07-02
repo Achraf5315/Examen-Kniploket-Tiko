@@ -299,13 +299,19 @@
             const notifications = document.querySelectorAll('.js-flash-notification');
 
             notifications.forEach(function (notification) {
+                // Bepaal timeout op basis van type (warning/error = langer, success = korter)
+                let timeout = 3000;
+                if (notification.classList.contains('bg-yellow-50') || notification.classList.contains('bg-red-50')) {
+                    timeout = 8000; // Waarschuwingen en fouten blijven langer zichtbaar
+                }
+
                 window.setTimeout(function () {
                     notification.classList.add('opacity-0');
 
                     window.setTimeout(function () {
                         notification.remove();
                     }, 300);
-                }, 3000);
+                }, timeout);
             });
         });
     </script>

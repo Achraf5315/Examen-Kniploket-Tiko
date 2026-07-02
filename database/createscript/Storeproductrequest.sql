@@ -1,6 +1,6 @@
 USE KniploketTiko;
 
-DROP PROCEDURE IF EXISTS sp_CreateProduct //
+DROP PROCEDURE IF EXISTS sp_CreateProduct
 
 DELIMITER //
 

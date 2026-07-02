@@ -278,45 +278,45 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        DB::beginTransaction();
-        
         try {
             $productName = $product->Productnaam;
-            
+
             // Controleer of product gekoppeld is aan behandelingen
             $hasBehandelingen = $product->behandelingen()->count() > 0;
-            
+
             if ($hasBehandelingen) {
                 return redirect()->route('products.index')
                     ->with('warning', "Product '{$productName}' kan niet worden verwijderd omdat het gekoppeld is aan behandelingen.");
             }
- 
+
+            DB::beginTransaction();
+
             // Soft delete door IsActief op 0 te zetten
             $product->update(['IsActief' => false]);
-            
+
             // Verwijder leverancier koppelingen
             $product->leveranciers()->detach();
- 
+
             DB::commit();
- 
+
             Log::info('Product deactivated', [
                 'product_id' => $product->Id,
                 'product_name' => $productName,
                 'user_id' => auth()->id(),
             ]);
- 
+
             return redirect()->route('products.index')
                 ->with('success', "Product '{$productName}' is succesvol verwijderd.");
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Error deleting product: ' . $e->getMessage(), [
                 'product_id' => $product->Id,
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'user_id' => auth()->id(),
             ]);
- 
+
             return redirect()->back()
                 ->with('error', 'Er is een fout opgetreden bij het verwijderen van het product.');
         }
