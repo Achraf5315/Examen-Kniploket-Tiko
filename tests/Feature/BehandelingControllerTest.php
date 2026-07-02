@@ -79,4 +79,95 @@ class BehandelingControllerTest extends TestCase
         $reactie->assertSee('Haar Volledig Kleuren (Kort haar)');
         $reactie->assertSee('value="90"', false);
     }
+
+    // ---------- Feature: Behandeling Toevoegen (Create) ----------
+
+    /**
+     * Happy path: een behandeling wordt met geldige gegevens opgeslagen en
+     * de gebruiker wordt met een succesmelding teruggestuurd naar het overzicht.
+     */
+    public function test_behandeling_toevoegen_lukt_met_geldige_gegevens(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())->post(route('behandelingen.store'), [
+            'Naam' => 'Föhnbehandeling Deluxe',
+            'Prijs' => 34.95,
+            'DuurMinuten' => 25,
+            'Opmerking' => 'Testbehandeling',
+            'Producten' => [1],
+        ]);
+
+        $reactie->assertRedirect(route('behandelingen.index'));
+        $reactie->assertSessionHas('success');
+
+        // De nieuwe behandeling staat actief in de database.
+        $this->assertDatabaseHas('Behandeling', [
+            'Naam' => 'Föhnbehandeling Deluxe',
+            'DuurMinuten' => 25,
+            'IsActief' => 1,
+        ]);
+    }
+
+    /**
+     * Unhappy path: lege invoer wordt tegengehouden door de server-side validatie.
+     */
+    public function test_behandeling_toevoegen_faalt_bij_lege_invoer(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('behandelingen.create'))
+            ->post(route('behandelingen.store'), []);
+
+        $reactie->assertRedirect(route('behandelingen.create'));
+        $reactie->assertSessionHasErrors(['Naam', 'Prijs', 'DuurMinuten']);
+    }
+
+    /**
+     * Unhappy path: een prijs boven 999.99 (meer dan 3 cijfers voor de komma) wordt geweigerd.
+     */
+    public function test_behandeling_toevoegen_faalt_bij_te_hoge_prijs(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('behandelingen.create'))
+            ->post(route('behandelingen.store'), [
+                'Naam' => 'Veel te dure behandeling',
+                'Prijs' => 1000,
+                'DuurMinuten' => 30,
+            ]);
+
+        $reactie->assertSessionHasErrors('Prijs');
+        $this->assertDatabaseMissing('Behandeling', ['Naam' => 'Veel te dure behandeling']);
+    }
+
+    /**
+     * Unhappy path: een duur boven 999 minuten (meer dan 3 cijfers) wordt geweigerd.
+     */
+    public function test_behandeling_toevoegen_faalt_bij_te_lange_duur(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('behandelingen.create'))
+            ->post(route('behandelingen.store'), [
+                'Naam' => 'Eindeloze behandeling',
+                'Prijs' => 20,
+                'DuurMinuten' => 1000,
+            ]);
+
+        $reactie->assertSessionHasErrors('DuurMinuten');
+        $this->assertDatabaseMissing('Behandeling', ['Naam' => 'Eindeloze behandeling']);
+    }
+
+    /**
+     * Unhappy path: een dubbele naam wordt geweigerd (unieke naam-regel).
+     */
+    public function test_behandeling_toevoegen_faalt_bij_dubbele_naam(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('behandelingen.create'))
+            ->post(route('behandelingen.store'), [
+                // 'Knippen & Stylen (Heren)' bestaat al in de seeder.
+                'Naam' => 'Knippen & Stylen (Heren)',
+                'Prijs' => 20,
+                'DuurMinuten' => 30,
+            ]);
+
+        $reactie->assertSessionHasErrors('Naam');
+    }
 }
