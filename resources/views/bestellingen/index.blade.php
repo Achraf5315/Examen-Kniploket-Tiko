@@ -77,7 +77,7 @@
                             <tr>
                                 <td colspan="8">
                                     <div class="bg-amber-50 text-amber-700 text-center p-3">
-                                        Er zijn geen betalingen om te tonen.
+                                        Er zijn geen bestellingen om te tonen.
                                     </div>
                                 </td>
                             </tr>
