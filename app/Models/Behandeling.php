@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Behandeling extends TikoModel
 {
@@ -12,6 +13,24 @@ class Behandeling extends TikoModel
     use HasFactory;
 
     protected $table = 'Behandeling';
+
+    protected $primaryKey = 'Id';
+
+    protected $fillable = [
+        'Naam',
+        'Prijs',
+        'DuurMinuten',
+        'IsActief',
+        'Opmerking',
+    ];
+
+    /**
+     * Haalt het overzicht op via de SQL Stored Procedure.
+     */
+    public static function getAllViaStoredProcedure(): array
+    {
+        return DB::select('CALL Sp_GetAllBehandelingen()');
+    }
 
     public function producten(): BelongsToMany
     {
