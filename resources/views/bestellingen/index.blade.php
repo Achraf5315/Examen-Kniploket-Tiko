@@ -50,8 +50,12 @@
                                 Status
                             </th>
                             <th
-                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 text-center">
                                 Wijzigen
+                            </th>
+                            <th
+                                class="bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 text-center">
+                                Verwijderen
                             </th>
                         </tr>
                     </thead>
@@ -88,14 +92,40 @@
                                         }
                                     @endphp
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle text-center">
-                                    <a href="{{ route('bestellingen.edit', $bestelling->Id) }}" class="inline-flex items-center justify-center text-blue-600 hover:text-blue-900">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <td
+                                    class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle text-center">
+                                    <a href="{{ route('bestellingen.edit', $bestelling->Id) }}"
+                                        class="inline-flex items-center justify-center text-blue-600 hover:text-blue-900">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                         </svg>
                                     </a>
                                 </td>
+                                <td
+                                    class="px-4 py-3 text-sm text-gray-500 border-t border-gray-100 align-middle text-center">
+                                    <form action="{{ route('bestellingen.destroy', $bestelling->Id) }}" method="POST"
+                                        onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt verwijderen?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="inline-flex items-center justify-center text-red-600 hover:text-red-900">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path
+                                                    d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                </path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+
                             </tr>
                         @empty
                             <tr>

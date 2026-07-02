@@ -32,6 +32,10 @@ Route::post('/bestellingen/{bestelling}', [BestellingController::class, 'update'
 ->name('bestellingen.update')
 ->middleware(['auth', 'verified']);
 
+Route::delete('/bestellingen/{bestelling}', [BestellingController::class, 'destroy'])
+->name('bestellingen.destroy')
+->middleware(['auth', 'verified']);
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
