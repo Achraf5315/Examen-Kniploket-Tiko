@@ -219,4 +219,52 @@ class BehandelingControllerTest extends TestCase
             'Prijs' => 19.00,
         ]);
     }
+
+    // ---------- Feature: Behandeling Verwijderen (Delete) ----------
+
+    /**
+     * Happy path: met de juiste bevestigingscode wordt de behandeling (soft-)verwijderd
+     * en verdwijnt ze uit het overzicht.
+     */
+    public function test_behandeling_verwijderen_lukt_met_juiste_bevestiging(): void
+    {
+        // Behandeling 5 uit de seeder: 'Kinderen knippen (t/m 12 jaar)'.
+        $reactie = $this->actingAs($this->eigenaar())->delete(route('behandelingen.destroy', 5), [
+            'bevestigingscode' => 'VERWIJDEREN',
+        ]);
+
+        $reactie->assertRedirect(route('behandelingen.index'));
+        $reactie->assertSessionHas('success');
+
+        // Soft-delete: de rij bestaat nog maar staat op inactief.
+        $this->assertDatabaseHas('Behandeling', [
+            'Id' => 5,
+            'IsActief' => 0,
+        ]);
+
+        // De verwijderde behandeling is niet meer zichtbaar in het overzicht.
+        $overzicht = $this->actingAs($this->eigenaar())->get(route('behandelingen.index'));
+        $overzicht->assertDontSee('Kinderen knippen (t/m 12 jaar)');
+    }
+
+    /**
+     * Unhappy path: een verkeerd bevestigingswoord wordt geweigerd en de behandeling
+     * blijft actief bestaan.
+     */
+    public function test_behandeling_verwijderen_faalt_bij_verkeerd_bevestigingswoord(): void
+    {
+        $reactie = $this->actingAs($this->eigenaar())
+            ->from(route('behandelingen.index'))
+            ->delete(route('behandelingen.destroy', 5), [
+                'bevestigingscode' => 'verwijder',
+            ]);
+
+        $reactie->assertSessionHasErrors('bevestigingscode');
+
+        // De behandeling bestaat nog steeds en is nog actief.
+        $this->assertDatabaseHas('Behandeling', [
+            'Id' => 5,
+            'IsActief' => 1,
+        ]);
+    }
 }
