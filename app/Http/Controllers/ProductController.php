@@ -1,384 +1,623 @@
 <?php
- 
+
 namespace App\Http\Controllers;
- use Illuminate\Http\Request;
-use App\Models\Product;
-use App\Models\Categorie;
-use App\Models\Leverancier;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
- 
+
 /**
  * ProductController
- * 
- * Beheert CRUD-operaties voor producten met ingebouwde validatie,
- * error handling en logging conform PSR-12 standaarden.
- * 
- * @package App\Http\Controllers
+ *
+ * Beheert alle acties rondom producten.
+ * De controller gebruikt Stored Procedures voor databasebewerkingen
+ * en verzorgt de communicatie tussen de database en de webpagina's.
  */
 class ProductController extends Controller
 {
     /**
-     * Geeft de index pagina met alle producten
-     * 
-     * @return \Illuminate\View\View
+     * Toont het overzicht van alle producten.
+     *
+     * De gebruiker kan producten zoeken, filteren, sorteren
+     * en bekijken via meerdere pagina's.
      */
-  public function index(Request $request)
-{
-    try {
-        $search = trim((string) $request->query('search', ''));
-        $selectedCategory = $request->query('category', '');
-        $showLowStockOnly = $request->boolean('low_stock');
-        $sortBy = $request->query('sort', 'Productnaam');
-        $sortDirection = $request->query('direction', 'asc');
+    public function index(Request $request)
+    {
+        try {
 
-        // Whitelist sortable columns to prevent SQL injection via query string
-        $allowedSorts = ['Productnaam', 'EanCode', 'Prijs', 'Voorraad'];
-        if (!in_array($sortBy, $allowedSorts, true)) {
-            $sortBy = 'Productnaam';
+            // Haalt de zoekterm en filterinstellingen van de gebruiker op.
+            $search = trim((string) $request->query('search', ''));
+            $selectedCategory = $request->query('category', '');
+            $showLowStockOnly = $request->boolean('low_stock');
+            $sortBy = $request->query('sort', 'Productnaam');
+            $sortDirection = $request->query('direction', 'asc');
+
+
+            /*
+             * Alleen toegestane kolommen mogen gebruikt worden
+             * voor sortering. Dit voorkomt ongewenste invoer via de URL.
+             */
+            $allowedSorts = [
+                'Productnaam',
+                'EanCode',
+                'Prijs',
+                'Voorraad'
+            ];
+
+            if (!in_array($sortBy, $allowedSorts, true)) {
+                $sortBy = 'Productnaam';
+            }
+
+            if (!in_array($sortDirection, ['asc', 'desc'], true)) {
+                $sortDirection = 'asc';
+            }
+
+
+            /*
+             * Haalt de producten op via een Stored Procedure.
+             * De database verzorgt hierbij ook de koppeling
+             * met categorieën en leveranciers.
+             */
+            $productsData = DB::select('CALL sp_GetProducts(?, ?, ?)', [
+                $search ?: null,
+                $selectedCategory ?: null,
+                $showLowStockOnly ? 1 : 0,
+            ]);
+
+
+            /*
+             * Sorteert de resultaten op basis van de gekozen optie.
+             * De standaardvolgorde is op productnaam.
+             */
+            $productsData = collect($productsData)
+                ->sortBy(
+                    fn ($product) => $product->$sortBy ?? $product->Productnaam,
+                    SORT_REGULAR,
+                    $sortDirection === 'desc'
+                )
+                ->values()
+                ->all();
+
+
+            /*
+             * Verdeelt de resultaten over meerdere pagina's.
+             * Hierdoor blijft het overzicht overzichtelijk bij veel producten.
+             */
+            $currentPage = (int) $request->query('page', 1);
+            $perPage = 15;
+
+            $offset = ($currentPage - 1) * $perPage;
+
+            $pageItems = array_slice(
+                $productsData,
+                $offset,
+                $perPage
+            );
+
+
+            $products = new LengthAwarePaginator(
+                $pageItems,
+                count($productsData),
+                $perPage,
+                $currentPage,
+                [
+                    'path' => $request->url(),
+                    'query' => $request->query()
+                ]
+            );
+
+
+            /*
+             * Haalt de actieve categorieën op voor het filtermenu.
+             */
+            $categories = DB::select(
+                'CALL sp_GetCategories()'
+            );
+
+
+            /*
+             * Stuurt alle gegevens naar de productpagina.
+             */
+            return view('products.index', [
+                'products' => $products,
+                'categories' => $categories,
+                'search' => $search,
+                'selectedCategory' => $selectedCategory,
+                'showLowStockOnly' => $showLowStockOnly,
+                'sortBy' => $sortBy,
+                'sortDirection' => $sortDirection,
+            ]);
+
+        } catch (\Exception $e) {
+
+            /*
+             * Fouten worden opgeslagen in het logbestand.
+             * Hierdoor zijn problemen later terug te vinden.
+             */
+            Log::error('Fout bij laden producten', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+
+            return redirect()
+                ->route('dashboard')
+                ->with(
+                    'error',
+                    'Er is een fout opgetreden bij het laden van producten.'
+                );
         }
-        if (!in_array($sortDirection, ['asc', 'desc'], true)) {
-            $sortDirection = 'asc';
-        }
-
-        $query = Product::query()
-            ->where('IsActief', true)
-            ->with(['categorie', 'leveranciers']);
-
-        if ($search !== '') {
-            $searchTerm = '%' . $search . '%';
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('Productnaam', 'LIKE', $searchTerm)
-                  ->orWhere('EanCode', 'LIKE', $searchTerm)
-                  ->orWhere('Opmerking', 'LIKE', $searchTerm);
-            });
-        }
-
-        if ($selectedCategory !== '') {
-            $query->where('CategorieId', $selectedCategory);
-        }
-
-        if ($showLowStockOnly) {
-            $query->whereRaw('Voorraad <= MinimumVoorraad');
-        }
-
-        $query->orderBy($sortBy, $sortDirection);
-
-        $products = $query->paginate(15)->withQueryString();
-
-        $categories = Categorie::where('IsActief', true)
-            ->orderBy('Naam')
-            ->get();
-
-        return view('products.index', [
-            'products' => $products,
-            'categories' => $categories,
-            'search' => $search,
-            'selectedCategory' => $selectedCategory,
-            'showLowStockOnly' => $showLowStockOnly,
-            'sortBy' => $sortBy,
-            'sortDirection' => $sortDirection,
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error loading product index: ' . $e->getMessage(), [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-        ]);
-
-        return redirect()->route('dashboard')
-            ->with('error', 'Er is een fout opgetreden bij het laden van de producten.');
     }
-}
- 
+
+
     /**
-     * Geeft het formulier voor het aanmaken van een nieuw product
-     * 
-     * @return \Illuminate\View\View
+     * Toont het formulier om een nieuw product toe te voegen.
      */
     public function create()
     {
         try {
-            $categories = Categorie::where('IsActief', true)
-                ->orderBy('Naam')
-                ->get();
-            
-            $suppliers = Leverancier::where('IsActief', true)
-                ->orderBy('Naam')
-                ->get();
- 
-            return view('products.create', compact('categories', 'suppliers'));
-        } catch (\Exception $e) {
-            Log::error('Error loading create product form: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+
+            /*
+             * Haalt de beschikbare categorieën en leveranciers op
+             * voor de keuzelijsten in het formulier.
+             */
+            $categories = DB::select(
+                'CALL sp_GetCategories()'
+            );
+
+            $suppliers = DB::select(
+                'CALL sp_GetLeveranciers()'
+            );
+
+
+            return view('products.create', [
+                'categories' => $categories,
+                'suppliers' => $suppliers,
             ]);
-            
-            return redirect()->route('products.index')
-                ->with('error', 'Er is een fout opgetreden bij het laden van het formulier.');
+
+
+        } catch (\Exception $e) {
+
+            Log::error('Fout bij openen productformulier', [
+                'message' => $e->getMessage(),
+            ]);
+
+
+            return redirect()
+                ->route('products.index')
+                ->with(
+                    'error',
+                    'Het productformulier kon niet worden geladen.'
+                );
         }
     }
- 
+
     /**
-     * Slaat een nieuw product op in de database
-     * 
-     * @param \App\Http\Requests\StoreProductRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Slaat een nieuw product op in de database.
+     *
+     * De invoer wordt eerst gecontroleerd.
+     * Daarna wordt het product via een Stored Procedure toegevoegd.
      */
     public function store(StoreProductRequest $request)
-{
-    try {
-        $validatedData = $request->validated();
-
-        $leveranciersString = !empty($validatedData['leveranciers'])
-            ? implode(',', $validatedData['leveranciers'])
-            : '';
-
-        DB::statement('CALL sp_CreateProduct(?, ?, ?, ?, ?, ?, ?, ?)', [
-            $validatedData['Productnaam'],
-            $validatedData['EanCode'],
-            $validatedData['CategorieId'],
-            $validatedData['Prijs'],
-            $validatedData['Voorraad'],
-            $validatedData['MinimumVoorraad'],
-            $validatedData['Opmerking'] ?? null,
-            $leveranciersString,
-        ]);
-
-        $product = Product::where('EanCode', $validatedData['EanCode'])->latest('Id')->first();
-
-        Log::info('Product aangemaakt via sp_CreateProduct', [
-            'product_id' => $product->Id ?? null,
-            'product_name' => $validatedData['Productnaam'],
-            'user_id' => auth()->id(),
-        ]);
-
-        return redirect()->route('products.index')
-            ->with('success', "Product '{$validatedData['Productnaam']}' is succesvol aangemaakt.");
-    } catch (\Exception $e) {
-        Log::error('Error creating product: ' . $e->getMessage(), [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'user_id' => auth()->id(),
-        ]);
-
-        $message = str_contains($e->getMessage(), 'SQLSTATE[45000]')
-            ? preg_replace('/^.*45000\]:\s*/', '', $e->getMessage())
-            : 'Er is een fout opgetreden bij het aanmaken van het product.';
-
-        return redirect()->back()
-            ->with('error', $message)
-            ->withInput();
-    }
-}
- 
-    /**
-     * Geeft het formulier voor het bewerken van een product
-     * 
-     * @param \App\Models\Product $product
-     * @return \Illuminate\View\View
-     */
-    public function edit(Product $product)
     {
         try {
-            $categories = Categorie::where('IsActief', true)
-                ->orderBy('Naam')
-                ->get();
-            
-            $suppliers = Leverancier::where('IsActief', true)
-                ->orderBy('Naam')
-                ->get();
-            
-            $selectedSuppliers = $product->leveranciers()
-                ->pluck('LeverancierId')
-                ->toArray();
- 
-            return view('products.edit', compact('product', 'categories', 'suppliers', 'selectedSuppliers'));
-        } catch (ModelNotFoundException $e) {
-            Log::warning('Product not found for edit: ' . $e->getMessage(), [
-                'user_id' => auth()->id(),
-            ]);
-            
-            return redirect()->route('products.index')
-                ->with('error', 'Het product is niet gevonden.');
-        } catch (\Exception $e) {
-            Log::error('Error loading edit product form: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-            
-            return redirect()->route('products.index')
-                ->with('error', 'Er is een fout opgetreden bij het laden van het formulier.');
-        }
-    }
- 
-    /**
-     * Werkt een bestaand product bij
-     * 
-     * @param \App\Http\Requests\UpdateProductRequest $request
-     * @param \App\Models\Product $product
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(UpdateProductRequest $request, Product $product)
-    {
-        DB::beginTransaction();
-        
-        try {
+
+            /*
+             * Haalt alleen gegevens op die de validatie hebben doorstaan.
+             */
             $validatedData = $request->validated();
- 
-            // Update productgegevens
-            $product->update([
-                'Productnaam' => $validatedData['Productnaam'],
-                'EanCode' => $validatedData['EanCode'],
-                'CategorieId' => $validatedData['CategorieId'],
-                'Prijs' => $validatedData['Prijs'],
-                'Voorraad' => $validatedData['Voorraad'],
-                'MinimumVoorraad' => $validatedData['MinimumVoorraad'],
-                'Opmerking' => $validatedData['Opmerking'] ?? null,
+
+
+            /*
+             * De geselecteerde leveranciers worden samengevoegd,
+             * zodat de Stored Procedure deze gegevens kan verwerken.
+             */
+            $supplierIds = !empty($validatedData['leveranciers'])
+                ? implode(',', $validatedData['leveranciers'])
+                : '';
+
+
+            /*
+             * Het product wordt opgeslagen via de databaseprocedure.
+             * De waarden worden veilig meegegeven via parameters.
+             */
+            DB::statement('CALL sp_CreateProduct(?, ?, ?, ?, ?, ?, ?, ?)', [
+                $validatedData['Productnaam'],
+                $validatedData['EanCode'],
+                $validatedData['CategorieId'],
+                $validatedData['Prijs'],
+                $validatedData['Voorraad'],
+                $validatedData['MinimumVoorraad'],
+                $validatedData['Opmerking'] ?? null,
+                $supplierIds,
             ]);
- 
-            // Werk leveranciers bij
-            if (isset($validatedData['leveranciers'])) {
-                $product->leveranciers()->sync($validatedData['leveranciers']);
-            }
- 
-            DB::commit();
- 
-            Log::info('Product bijgewerkt', [
-                'product_id' => $product->Id,
-                'product_name' => $product->Productnaam,
+
+
+            /*
+             * Zoekt het aangemaakte product op om het ID
+             * te kunnen gebruiken in de logging.
+             */
+            $newProduct = DB::select(
+                'SELECT Id FROM Product WHERE EanCode = ? ORDER BY Id DESC LIMIT 1',
+                [
+                    $validatedData['EanCode']
+                ]
+            );
+
+
+            Log::info('Product aangemaakt', [
+                'product_id' => $newProduct[0]->Id ?? null,
+                'productnaam' => $validatedData['Productnaam'],
                 'user_id' => auth()->id(),
             ]);
- 
-            return redirect()->route('products.index')
-                ->with('success', "Product '{$product->Productnaam}' is succesvol bijgewerkt.");
+
+
+            return redirect()
+                ->route('products.index')
+                ->with(
+                    'success',
+                    "Product '{$validatedData['Productnaam']}' is succesvol toegevoegd."
+                );
+
+
         } catch (\Exception $e) {
-            DB::rollBack();
-            
-            Log::error('Error updating product: ' . $e->getMessage(), [
-                'product_id' => $product->Id,
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+
+
+            Log::error('Fout bij aanmaken product', [
+                'message' => $e->getMessage(),
                 'user_id' => auth()->id(),
             ]);
- 
-            return redirect()->back()
-                ->with('error', 'Er is een fout opgetreden bij het bijwerken van het product.')
+
+
+            /*
+             * Databasefouten worden omgezet naar een leesbare melding.
+             */
+            $message = str_contains($e->getMessage(), 'SQLSTATE[45000]')
+                ? preg_replace('/^.*45000\]:\s*/', '', $e->getMessage())
+                : 'Het product kon niet worden opgeslagen.';
+
+
+            return redirect()
+                ->back()
+                ->with('error', $message)
                 ->withInput();
         }
     }
- 
+
+
     /**
-     * Verwijdert een product (soft delete via IsActief)
-     * 
-     * @param \App\Models\Product $product
-     * @return \Illuminate\Http\RedirectResponse
+     * Toont het formulier om een bestaand product te wijzigen.
      */
-    public function destroy(Product $product)
+    public function edit(int $product)
     {
         try {
-            $productName = $product->Productnaam;
 
-            // Controleer of product gekoppeld is aan behandelingen
-            $hasBehandelingen = $product->behandelingen()->count() > 0;
 
-            if ($hasBehandelingen) {
-                return redirect()->route('products.index')
-                    ->with('warning', "Product '{$productName}' kan niet worden verwijderd omdat het gekoppeld is aan behandelingen.");
+            /*
+             * Haalt het gekozen product op inclusief gekoppelde gegevens.
+             */
+            $productResult = DB::select(
+                'CALL sp_GetProductById(?)',
+                [
+                    $product
+                ]
+            );
+
+
+            if (empty($productResult)) {
+
+                return redirect()
+                    ->route('products.index')
+                    ->with(
+                        'error',
+                        'Het product is niet gevonden.'
+                    );
             }
 
-            DB::beginTransaction();
 
-            // Soft delete door IsActief op 0 te zetten
-            $product->update(['IsActief' => false]);
+            $productData = $productResult[0];
 
-            // Verwijder leverancier koppelingen
-            $product->leveranciers()->detach();
 
-            DB::commit();
+            /*
+             * De opgeslagen leveranciers worden omgezet naar een lijst,
+             * zodat de juiste keuzes zichtbaar zijn in het formulier.
+             */
+            $selectedSuppliers = $productData->leveranciers_ids
+                ? explode(',', $productData->leveranciers_ids)
+                : [];
 
-            Log::info('Product deactivated', [
-                'product_id' => $product->Id,
-                'product_name' => $productName,
-                'user_id' => auth()->id(),
+
+            $categories = DB::select(
+                'CALL sp_GetCategories()'
+            );
+
+            $suppliers = DB::select(
+                'CALL sp_GetLeveranciers()'
+            );
+
+
+            return view('products.edit', [
+                'product' => $productData,
+                'categories' => $categories,
+                'suppliers' => $suppliers,
+                'selectedSuppliers' => $selectedSuppliers,
             ]);
 
-            return redirect()->route('products.index')
-                ->with('success', "Product '{$productName}' is succesvol verwijderd.");
+
         } catch (\Exception $e) {
-            DB::rollBack();
 
-            Log::error('Error deleting product: ' . $e->getMessage(), [
-                'product_id' => $product->Id,
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'user_id' => auth()->id(),
+
+            Log::error('Fout bij openen wijzigformulier', [
+                'message' => $e->getMessage(),
+                'product_id' => $product,
             ]);
 
-            return redirect()->back()
-                ->with('error', 'Er is een fout opgetreden bij het verwijderen van het product.');
+
+            return redirect()
+                ->route('products.index')
+                ->with(
+                    'error',
+                    'Het product kon niet worden geladen.'
+                );
         }
     }
- 
+
+
     /**
-     * Geeft JSON response met low stock producten
-     * 
-     * @return \Illuminate\Http\JsonResponse
+     * Werkt een bestaand product bij.
+     *
+     * De gewijzigde gegevens worden gecontroleerd
+     * en daarna opgeslagen via een Stored Procedure.
+     */
+    public function update(UpdateProductRequest $request, int $product)
+    {
+        try {
+
+
+            $validatedData = $request->validated();
+
+
+            /*
+             * Zet de gekozen leveranciers om naar een formaat
+             * dat door de databaseprocedure gelezen wordt.
+             */
+            $supplierIds = !empty($validatedData['leveranciers'])
+                ? implode(',', $validatedData['leveranciers'])
+                : '';
+
+
+            DB::statement('CALL sp_UpdateProduct(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                $product,
+                $validatedData['Productnaam'],
+                $validatedData['EanCode'],
+                $validatedData['CategorieId'],
+                $validatedData['Prijs'],
+                $validatedData['Voorraad'],
+                $validatedData['MinimumVoorraad'],
+                $validatedData['Opmerking'] ?? null,
+                $supplierIds,
+            ]);
+
+
+            Log::info('Product bijgewerkt', [
+                'product_id' => $product,
+                'user_id' => auth()->id(),
+            ]);
+
+
+            return redirect()
+                ->route('products.index')
+                ->with(
+                    'success',
+                    "Product '{$validatedData['Productnaam']}' is succesvol bijgewerkt."
+                );
+
+
+        } catch (\Exception $e) {
+
+
+            Log::error('Fout bij wijzigen product', [
+                'message' => $e->getMessage(),
+                'product_id' => $product,
+                'user_id' => auth()->id(),
+            ]);
+
+
+            $message = str_contains($e->getMessage(), 'SQLSTATE[45000]')
+                ? preg_replace('/^.*45000\]:\s*/', '', $e->getMessage())
+                : 'De wijzigingen konden niet worden opgeslagen.';
+
+
+            return redirect()
+                ->back()
+                ->with('error', $message)
+                ->withInput();
+        }
+    }
+
+    /**
+     * Maakt een product inactief.
+     *
+     * Het product wordt niet volledig verwijderd,
+     * maar blijft behouden voor historische gegevens.
+     */
+    public function destroy(int $product)
+    {
+        try {
+
+
+            /*
+             * Haalt eerst de productnaam op.
+             * Deze wordt gebruikt voor de melding naar de gebruiker.
+             */
+            $productResult = DB::select(
+                'SELECT Productnaam FROM Product WHERE Id = ? AND IsActief = 1',
+                [
+                    $product
+                ]
+            );
+
+
+            if (empty($productResult)) {
+
+                return redirect()
+                    ->route('products.index')
+                    ->with(
+                        'error',
+                        'Het product is niet gevonden.'
+                    );
+            }
+
+
+            $productName = $productResult[0]->Productnaam;
+
+
+            /*
+             * De databaseprocedure controleert of het product verwijderd mag worden
+             * en maakt het product daarna inactief.
+             */
+            DB::statement(
+                'CALL sp_DeleteProduct(?)',
+                [
+                    $product
+                ]
+            );
+
+
+            Log::info('Product verwijderd', [
+                'product_id' => $product,
+                'productnaam' => $productName,
+                'user_id' => auth()->id(),
+            ]);
+
+
+            return redirect()
+                ->route('products.index')
+                ->with(
+                    'success',
+                    "Product '{$productName}' is succesvol verwijderd."
+                );
+
+} catch (\Exception $e) {
+
+    Log::error('Fout bij verwijderen product', [
+        'message' => $e->getMessage(),
+        'product_id' => $product,
+    ]);
+
+    /*
+     * Wanneer de database een reden geeft waarom verwijderen niet mag,
+     * wordt alleen die melding getoond (zonder SQLSTATE-code, foutnummer
+     * of de query/connectiegegevens die MySQL/PDO eraan plakt).
+     */
+    $message = 'Het product kon niet worden verwijderd.';
+
+    if (preg_match('/SQLSTATE\[45000\]:.*?\d+\s+(.*?)\s*\(Connection:/s', $e->getMessage(), $matches)) {
+        $message = trim($matches[1]);
+    }
+
+    return redirect()
+        ->route('products.index')
+        ->with('error', $message);
+}
+    }
+
+
+    /**
+     * Geeft producten terug waarvan de voorraad laag is.
+     *
+     * Deze functie wordt gebruikt door de website
+     * om op de achtergrond voorraadwaarschuwingen te tonen.
      */
     public function getLowStockProducts()
     {
         try {
-            $lowStockProducts = Product::where('IsActief', true)
-                ->whereRaw('Voorraad <= MinimumVoorraad')
-                ->with('categorie')
-                ->orderBy('Voorraad')
-                ->get();
- 
+
+
+            /*
+             * Haalt alleen producten op die onder de minimale voorraad zitten.
+             */
+            $lowStockProducts = DB::select(
+                'CALL sp_GetProducts(?, ?, ?)',
+                [
+                    null,
+                    null,
+                    1,
+                ]
+            );
+
+
             return response()->json([
                 'success' => true,
                 'data' => $lowStockProducts,
-                'count' => $lowStockProducts->count(),
+                'count' => count($lowStockProducts),
             ]);
+
+
         } catch (\Exception $e) {
-            Log::error('Error fetching low stock products: ' . $e->getMessage());
-            
+
+
+            Log::error('Fout bij ophalen lage voorraad', [
+                'message' => $e->getMessage(),
+            ]);
+
+
             return response()->json([
                 'success' => false,
-                'message' => 'Er is een fout opgetreden bij het ophalen van producten met lage voorraad.',
+                'message' => 'De voorraadgegevens konden niet worden geladen.',
             ], 500);
         }
     }
- 
+
+
     /**
-     * Controleert of EAN code uniek is
-     * 
-     * @param string $eanCode
-     * @param int|null $productId
-     * @return \Illuminate\Http\JsonResponse
+     * Controleert of een EAN-code beschikbaar is.
+     *
+     * Wordt gebruikt tijdens het invullen van een formulier
+     * zodat de gebruiker direct feedback krijgt.
      */
-    public function checkEanCode($eanCode, $productId = null)
+    public function checkEanCode(string $eanCode, ?int $productId = null)
     {
         try {
-            $query = Product::where('EanCode', $eanCode)->where('IsActief', true);
-            
-            if ($productId) {
-                $query->where('Id', '!=', $productId);
-            }
- 
-            $exists = $query->exists();
- 
+
+
+            /*
+             * De database controleert of de EAN-code al bestaat.
+             */
+            $result = DB::select(
+                'CALL sp_CheckEanCode(?, ?)',
+                [
+                    $eanCode,
+                    $productId,
+                ]
+            );
+
+
+            $available = !empty($result)
+                && $result[0]->is_available == 1;
+
+
             return response()->json([
                 'success' => true,
-                'available' => !$exists,
+                'available' => $available,
             ]);
+
+
         } catch (\Exception $e) {
-            Log::error('Error checking EAN code: ' . $e->getMessage());
-            
+
+
+            Log::error('Fout bij controleren EAN-code', [
+                'message' => $e->getMessage(),
+            ]);
+
+
             return response()->json([
                 'success' => false,
-                'message' => 'Er is een fout opgetreden bij het controleren van de EAN code.',
+                'message' => 'De EAN-code kon niet worden gecontroleerd.',
             ], 500);
         }
     }

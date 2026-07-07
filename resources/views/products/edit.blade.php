@@ -22,7 +22,7 @@
         </div>
  
         <!-- Formulier -->
-        <form action="{{ route('products.update', $product) }}" method="POST" class="space-y-8">
+        <form action="{{ route('products.update', $product->Id) }}" method="POST" class="space-y-8">
             @csrf
             @method('PUT')
  
@@ -237,13 +237,13 @@
                         <div>
                             <p class="text-gray-600 dark:text-gray-400">Aangemaakt:</p>
                             <p class="text-gray-900 dark:text-white font-medium">
-                                {{ $product->DatumAangemaakt->format('d-m-Y H:i') }}
+                                {{ \Carbon\Carbon::parse($product->DatumAangemaakt)->format('d-m-Y H:i') }}
                             </p>
                         </div>
                         <div>
                             <p class="text-gray-600 dark:text-gray-400">Laatst bijgewerkt:</p>
                             <p class="text-gray-900 dark:text-white font-medium">
-                                {{ $product->DatumGewijzigd->format('d-m-Y H:i') }}
+                                {{ \Carbon\Carbon::parse($product->DatumGewijzigd)->format('d-m-Y H:i') }}
                             </p>
                         </div>
                     </div>

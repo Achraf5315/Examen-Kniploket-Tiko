@@ -24,6 +24,7 @@ class UpdateProductRequest extends FormRequest
     {
         // TODO: vervang door auth()->user()->can('update', $this->route('product'))
         // zodra er een ProductPolicy is aangemaakt en geregistreerd.
+   
         return $this->user() !== null;
     }
 
@@ -34,7 +35,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        $productId = $this->route('product')->Id;
+        $productId = (int) $this->route('product');
 
         return [
             'Productnaam' => [

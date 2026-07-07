@@ -121,41 +121,47 @@
                         <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                             <tr>
                                 <th class="px-6 py-3 text-left">
-                                    <a href="{{ $sortLink('Productnaam') }}" class="flex items-center space-x-2 hover:text-blue-600">
-                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Productnaam</span>
+                                    <a href="{{ $sortLink('Productnaam') }}" class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:text-gray-900 dark:hover:text-white">
+                                        Product
                                         @if($sortBy === 'Productnaam')
-                                            @if($sortDirection === 'asc')
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z" /></svg>
-                                            @else
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z" /></svg>
-                                            @endif
+                                            <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                                                <path @if($sortDirection === 'desc') d="M3 9a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" @else d="M3 11a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1zm0-4a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V8a1 1 0 011-1h1z" @endif />
+                                            </svg>
                                         @endif
                                     </a>
                                 </th>
                                 <th class="px-6 py-3 text-left">
-                                    <a href="{{ $sortLink('EanCode') }}" class="flex items-center space-x-2 hover:text-blue-600">
-                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">EAN-Code</span>
-                                    </a>
+                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">EAN-Code</span>
                                 </th>
                                 <th class="px-6 py-3 text-left">
-                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">Categorie</span>
+                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Categorie</span>
+                                </th>
+                                <th class="px-6 py-3 text-left">
+                                    <a href="{{ $sortLink('Prijs') }}" class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:text-gray-900 dark:hover:text-white">
+                                        Prijs
+                                        @if($sortBy === 'Prijs')
+                                            <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                                                <path @if($sortDirection === 'desc') d="M3 9a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" @else d="M3 11a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1zm0-4a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V8a1 1 0 011-1h1z" @endif />
+                                            </svg>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th class="px-6 py-3 text-center">
+                                    <a href="{{ $sortLink('Voorraad') }}" class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:text-gray-900 dark:hover:text-white">
+                                        Voorraad
+                                        @if($sortBy === 'Voorraad')
+                                            <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                                                <path @if($sortDirection === 'desc') d="M3 9a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" @else d="M3 11a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1zm0-4a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V8a1 1 0 011-1h1z" @endif />
+                                            </svg>
+                                        @endif
+                                    </a>
                                 </th>
                                 <th class="px-6 py-3 text-right">
-                                    <a href="{{ $sortLink('Prijs') }}" class="flex items-center justify-end space-x-2 hover:text-blue-600 ml-auto">
-                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Prijs</span>
-                                    </a>
-                                </th>
-                                <th class="px-6 py-3 text-center">
-                                    <a href="{{ $sortLink('Voorraad') }}" class="flex items-center justify-center space-x-2 hover:text-blue-600 mx-auto">
-                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Voorraad</span>
-                                    </a>
-                                </th>
-                                <th class="px-6 py-3 text-center">
-                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">Acties</span>
+                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Acties</span>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach($products as $product)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <td class="px-6 py-4">
@@ -169,7 +175,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                            {{ $product->categorie->Naam }}
+                                            {{ $product->categorie_naam }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
@@ -179,28 +185,25 @@
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         @if($product->Voorraad <= $product->MinimumVoorraad)
-                                            <div class="inline-flex flex-col items-center">
-                                                <span class="text-sm font-bold text-red-600 dark:text-red-400">{{ $product->Voorraad }}</span>
-                                                <span class="inline-flex items-center text-xs text-red-500 dark:text-red-400">
-                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                                                    </svg>
-                                                    Te laag
-                                                </span>
-                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+                                                {{ $product->Voorraad }}
+                                                <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                                </svg>
+                                            </span>
                                         @else
                                             <span class="text-sm text-gray-600 dark:text-gray-400">{{ $product->Voorraad }}</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <div class="flex items-center justify-center space-x-2">
-                                            <a href="{{ route('products.edit', $product) }}" class="inline-flex items-center px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex gap-2 justify-end">
+                                            <a href="{{ route('products.edit', $product->Id) }}" class="inline-flex items-center px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                                 Bewerk
                                             </a>
-                                            <form action="{{ route('products.destroy', $product) }}" method="POST"
+                                            <form action="{{ route('products.destroy', $product->Id) }}" method="POST"
                                                   onsubmit="return confirm('Weet u zeker dat u \'{{ addslashes($product->Productnaam) }}\' wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');">
                                                 @csrf
                                                 @method('DELETE')
@@ -229,7 +232,7 @@
                                     <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">{{ $product->EanCode }}</p>
                                 </div>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                    {{ $product->categorie->Naam }}
+                                    {{ $product->categorie_naam }}
                                 </span>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-sm">
@@ -252,10 +255,10 @@
                                 </div>
                             </div>
                             <div class="flex space-x-2 pt-2">
-                                <a href="{{ route('products.edit', $product) }}" class="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+                                <a href="{{ route('products.edit', $product->Id) }}" class="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
                                     Bewerk
                                 </a>
-                                <form action="{{ route('products.destroy', $product) }}" method="POST" class="flex-1"
+                                <form action="{{ route('products.destroy', $product->Id) }}" method="POST" class="flex-1"
                                       onsubmit="return confirm('Weet u zeker dat u \'{{ addslashes($product->Productnaam) }}\' wilt verwijderen?');">
                                     @csrf
                                     @method('DELETE')
@@ -293,26 +296,26 @@
 </div>
 @endsection
 
-    @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const notifications = document.querySelectorAll('.js-flash-notification');
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const notifications = document.querySelectorAll('.js-flash-notification');
 
-            notifications.forEach(function (notification) {
-                // Bepaal timeout op basis van type (warning/error = langer, success = korter)
-                let timeout = 3000;
-                if (notification.classList.contains('bg-yellow-50') || notification.classList.contains('bg-red-50')) {
-                    timeout = 8000; // Waarschuwingen en fouten blijven langer zichtbaar
-                }
+        notifications.forEach(function (notification) {
+            // Bepaal timeout op basis van type (warning/error = langer, success = korter)
+            let timeout = 3000;
+            if (notification.classList.contains('bg-yellow-50') || notification.classList.contains('bg-red-50')) {
+                timeout = 8000; // Waarschuwingen en fouten blijven langer zichtbaar
+            }
+
+            window.setTimeout(function () {
+                notification.classList.add('opacity-0');
 
                 window.setTimeout(function () {
-                    notification.classList.add('opacity-0');
-
-                    window.setTimeout(function () {
-                        notification.remove();
-                    }, 300);
-                }, timeout);
-            });
+                    notification.remove();
+                }, 300);
+            }, timeout);
         });
-    </script>
-    @endpush
+    });
+</script>
+@endpush
