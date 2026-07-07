@@ -6,11 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Model voor gebruikersrollen (bijv. Admin, Medewerker, Klant).
+ *
+ * De koppeling met gebruikers loopt via de pivot-tabel RolPerGebruiker.
+ */
 class Rol extends TikoModel
 {
     /** @use HasFactory<\Database\Factories\RolFactory> */
     use HasFactory;
 
+    // De databasetabel gebruikt PascalCase-namen (afwijkend van de Laravel-conventie).
     protected $table = 'Rol';
 
     public function gebruikers(): BelongsToMany

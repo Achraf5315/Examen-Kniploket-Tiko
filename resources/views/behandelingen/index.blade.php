@@ -87,7 +87,7 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-300">
-                                        Er zijn nog geen behandelingen gevonden.
+                                        Er zijn momenteel geen behandelingen beschikbaar.
                                     </td>
                                 </tr>
                             @endforelse
@@ -184,7 +184,7 @@
             if (ingevoerd !== 'VERWIJDEREN') {
                 event.preventDefault();
 
-                errorBox.textContent = 'Je moet exact VERWIJDEREN invoeren om te kunnen verwijderen.';
+                errorBox.textContent = 'De ingevoerde bevestigingscode is onjuist.';
                 errorBox.classList.remove('hidden');
                 codeInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
                 codeInput.focus();

@@ -22,20 +22,21 @@ class DummyDataSeeder extends Seeder
             ['Id' => 7, 'Email' => 'tom.barber@kniplokettiko.nl', 'Gebruikersnaam' => 'tom.barber', 'Wachtwoord' => 'tom123', 'IsActief' => 1, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
         ]);
 
+        // De Admin-rol en de koppeling van de eigenaar (GebruikerId 1) daaraan
+        // worden al aangemaakt door DatabaseSeeder, dus die slaan we hier over
+        // om dubbele primary keys te voorkomen.
         DB::table('Rol')->insert([
-            ['Id' => 1, 'RolNaam' => 'Admin', 'IsActief' => 1, 'Opmerking' => 'Beheerder van het systeem', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 2, 'RolNaam' => 'Medewerker', 'IsActief' => 1, 'Opmerking' => 'Kapper/Stylist', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 3, 'RolNaam' => 'Klant', 'IsActief' => 1, 'Opmerking' => 'Reguliere klant', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 2, 'Rolnaam' => 'Medewerker', 'IsActief' => 1, 'Opmerking' => 'Kapper/Stylist', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 3, 'Rolnaam' => 'Klant', 'IsActief' => 1, 'Opmerking' => 'Reguliere klant', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
         ]);
 
         DB::table('RolPerGebruiker')->insert([
-            ['Id' => 1, 'GebruikerId' => 1, 'RolId' => 1, 'IsActief' => 1, 'Opmerking' => 'Standaard admin', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 2, 'GebruikerId' => 2, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 3, 'GebruikerId' => 3, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 4, 'GebruikerId' => 4, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 5, 'GebruikerId' => 5, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 6, 'GebruikerId' => 6, 'RolId' => 2, 'IsActief' => 1, 'Opmerking' => 'Eigenares/Styling specialist', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 7, 'GebruikerId' => 7, 'RolId' => 2, 'IsActief' => 1, 'Opmerking' => 'Senior barber', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['GebruikerId' => 2, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['GebruikerId' => 3, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['GebruikerId' => 4, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['GebruikerId' => 5, 'RolId' => 3, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['GebruikerId' => 6, 'RolId' => 2, 'IsActief' => 1, 'Opmerking' => 'Eigenares/Styling specialist', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['GebruikerId' => 7, 'RolId' => 2, 'IsActief' => 1, 'Opmerking' => 'Senior barber', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
         ]);
 
         DB::table('Klant')->insert([

@@ -30,6 +30,6 @@ BEGIN
         b.DuurMinuten,
         b.IsActief,
         b.Opmerking
-    ORDER BY b.Naam ASC;
+    ORDER BY b.Id DESC;
 END $$
 DELIMITER ;

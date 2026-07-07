@@ -70,7 +70,7 @@ return new class extends Migration
                     p.Id, p.Productnaam, p.EanCode, p.Prijs,
                     p.Voorraad, p.MinimumVoorraad, p.IsActief,
                     p.Opmerking, c.Id, c.Naam
-                ORDER BY p.Productnaam ASC;
+                ORDER BY p.Id DESC;
             END
         ');
 

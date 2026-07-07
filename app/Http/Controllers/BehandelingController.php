@@ -67,7 +67,7 @@ class BehandelingController extends Controller
                 return redirect()
                     ->back()
                     ->withInput()
-                    ->with('error', 'Deze behandeling bestaat al. Kies een andere naam.');
+                    ->with('error', 'Deze behandeling bestaat al.');
             }
 
             // Stored procedure verwacht één product-id; bij meerdere selecties nemen we de eerste.
@@ -199,7 +199,7 @@ class BehandelingController extends Controller
             'bevestigingscode' => ['required', 'string', 'in:VERWIJDEREN'],
         ], [
             'bevestigingscode.required' => 'Voer de bevestigingscode in.',
-            'bevestigingscode.in' => 'De bevestigingscode moet exact VERWIJDEREN zijn.',
+            'bevestigingscode.in' => 'De ingevoerde bevestigingscode is onjuist.',
         ], [
             'bevestigingscode' => 'bevestigingscode',
         ]);
@@ -245,6 +245,8 @@ class BehandelingController extends Controller
             'distinct' => 'Een geselecteerd item in :attribute komt dubbel voor.',
             'exists' => 'Een geselecteerd item in :attribute bestaat niet.',
             'unique' => 'De :attribute is al in gebruik.',
+            // Exacte tekst uit de userstory: bij een dubbele naam moet precies deze melding verschijnen.
+            'Naam.unique' => 'Deze behandeling bestaat al.',
         ];
     }
 
