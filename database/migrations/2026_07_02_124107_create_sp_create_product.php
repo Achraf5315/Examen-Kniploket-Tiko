@@ -60,9 +60,9 @@ return new class extends Migration
                     AND (
                         p_search IS NULL
                         OR p_search = \'\'
-                        OR p.Productnaam LIKE CONCAT(\'%\', p_search, \'%\')
-                        OR p.EanCode     LIKE CONCAT(\'%\', p_search, \'%\')
-                        OR p.Opmerking   LIKE CONCAT(\'%\', p_search, \'%\')
+                        OR p.Productnaam LIKE CONCAT(\'%\', p_search, \'%\') COLLATE utf8mb4_unicode_ci
+                        OR p.EanCode     LIKE CONCAT(\'%\', p_search, \'%\') COLLATE utf8mb4_unicode_ci
+                        OR p.Opmerking   LIKE CONCAT(\'%\', p_search, \'%\') COLLATE utf8mb4_unicode_ci
                     )
                     AND (p_categorieId IS NULL OR p.CategorieId = p_categorieId)
                     AND (p_lowStockOnly = 0 OR p.Voorraad <= p.MinimumVoorraad)
@@ -150,7 +150,7 @@ return new class extends Migration
                 END IF;
 
                 -- Validatie: EAN-code uniek
-                IF EXISTS (SELECT 1 FROM Product WHERE EanCode = p_EanCode AND IsActief = 1) THEN
+                IF EXISTS (SELECT 1 FROM Product WHERE EanCode = p_EanCode COLLATE utf8mb4_unicode_ci AND IsActief = 1) THEN
                     SIGNAL SQLSTATE \'45000\' SET MESSAGE_TEXT = \'EAN-code bestaat al\';
                 END IF;
 
@@ -350,7 +350,7 @@ return new class extends Migration
                         ELSE 0
                     END AS is_available
                 FROM Product
-                WHERE EanCode = p_EanCode
+                WHERE EanCode = p_EanCode COLLATE utf8mb4_unicode_ci
                   AND IsActief = 1
                   AND (p_productId IS NULL OR Id != p_productId);
             END
