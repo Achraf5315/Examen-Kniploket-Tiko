@@ -1,7 +1,8 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
+            <div
+                class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     Bestellingen Wijzigen
                 </div>
@@ -26,9 +27,11 @@
                             array_unshift($statuses, $selectedStatus);
                         }
                     @endphp
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
                         <div>
-                            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
+                            <label
+                                class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
                             <select name="ProductNaam"
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-400">
                                 <option value="">Selecteer product</option>
@@ -68,7 +71,8 @@
                         </div>
 
                         <div>
-                            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Orderdatum</label>
+                            <label
+                                class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Orderdatum</label>
                             <input type="date" name="Orderdatum" min="{{ date('Y-m-d') }}"
                                 value="{{ old('Orderdatum', $bestelling->Orderdatum) }}"
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-400" />
@@ -78,7 +82,8 @@
                         </div>
 
                         <div>
-                            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Verwachte leverdatum</label>
+                            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Verwachte
+                                leverdatum</label>
                             <input type="date" name="VerwachteLeverdatum" min="{{ date('Y-m-d') }}"
                                 value="{{ old('VerwachteLeverdatum', $bestelling->VerwachteLeverdatum) }}"
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-400" />
@@ -88,7 +93,8 @@
                         </div>
 
                         <div class="md:col-span-2">
-                            <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                            <label
+                                class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                             <select name="Status"
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-400">
                                 <option value="">Selecteer status</option>
@@ -103,8 +109,9 @@
                             @enderror
                         </div>
                     </div>
-                    <div>
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 transition">
+                    <div class="flex justify-end">
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 transition">
                             Opslaan
                         </button>
                     </div>
