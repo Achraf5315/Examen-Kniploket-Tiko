@@ -9,6 +9,12 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Controller voor het beheren van bestellingen bij leveranciers (volledig CRUD).
+ *
+ * Alle databasebewerkingen verlopen via stored procedures die worden
+ * aangeroepen in het Bestelling-model. Elke actie logt zowel succes als fouten.
+ */
 class BestellingController extends Controller
 {
     private Bestelling $bestelling;
@@ -18,6 +24,9 @@ class BestellingController extends Controller
         $this->bestelling = $bestelling;
     }
 
+    /**
+     * Toont het overzicht van alle bestellingen (Read).
+     */
     public function index()
     {
         // Probeer bestellingen op te halen en log eventuele fouten
@@ -37,6 +46,9 @@ class BestellingController extends Controller
         ]);
     }
 
+    /**
+     * Toont het formulier om een nieuwe bestelling toe te voegen (Create).
+     */
     public function create()
     {
         // Haal alleen producten en klanten op voor het aanmaken van een bestelling
@@ -51,6 +63,12 @@ class BestellingController extends Controller
         ]);
     }
 
+    /**
+     * Slaat een nieuwe bestelling op via de stored procedure (Create).
+     *
+     * De verwachte leverdatum moet minimaal 2 dagen na vandaag liggen;
+     * die bedrijfsregel wordt hier in PHP gecontroleerd voor de insert.
+     */
     public function store(Request $request)
     {
         // data valideren die we binnenkrijgen van de form
@@ -96,6 +114,9 @@ class BestellingController extends Controller
         return redirect()->route('bestellingen.index');
     }
 
+    /**
+     * Toont het formulier om een bestaande bestelling te wijzigen (Update).
+     */
     public function edit($id)
     {
         // Probeer de bestelling op te halen en log eventuele fouten
@@ -125,6 +146,12 @@ class BestellingController extends Controller
         ]);
     }
 
+    /**
+     * Werkt een bestaande bestelling bij via de stored procedure (Update).
+     *
+     * Een bestelling die al 'Geleverd' of 'Verzonden' is mag niet meer
+     * gewijzigd worden, om de historie van afgeronde bestellingen te bewaren.
+     */
     public function update(Request $request, $id)
     {
         $bestelling = $this->bestelling->findBestellingById($id);
@@ -187,6 +214,12 @@ class BestellingController extends Controller
         return redirect()->route('bestellingen.index');
     }
 
+    /**
+     * Verwijdert een bestelling via de stored procedure (Delete).
+     *
+     * Een bestelling die al 'Geleverd' of 'Verzonden' is mag niet meer
+     * verwijderd worden, om de historie van afgeronde bestellingen te bewaren.
+     */
     public function destroy($id)
     {
         $bestelling = $this->bestelling->findBestellingById($id);

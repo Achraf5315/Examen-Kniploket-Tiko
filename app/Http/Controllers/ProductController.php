@@ -32,8 +32,9 @@ class ProductController extends Controller
             $search = trim((string) $request->query('search', ''));
             $selectedCategory = $request->query('category', '');
             $showLowStockOnly = $request->boolean('low_stock');
-            $sortBy = $request->query('sort', 'Productnaam');
-            $sortDirection = $request->query('direction', 'asc');
+            // Standaard tonen we de nieuwst toegevoegde producten bovenaan (Id DESC).
+            $sortBy = $request->query('sort', 'Id');
+            $sortDirection = $request->query('direction', 'desc');
 
 
             /*
@@ -41,6 +42,7 @@ class ProductController extends Controller
              * voor sortering. Dit voorkomt ongewenste invoer via de URL.
              */
             $allowedSorts = [
+                'Id',
                 'Productnaam',
                 'EanCode',
                 'Prijs',
@@ -48,11 +50,11 @@ class ProductController extends Controller
             ];
 
             if (!in_array($sortBy, $allowedSorts, true)) {
-                $sortBy = 'Productnaam';
+                $sortBy = 'Id';
             }
 
             if (!in_array($sortDirection, ['asc', 'desc'], true)) {
-                $sortDirection = 'asc';
+                $sortDirection = 'desc';
             }
 
 

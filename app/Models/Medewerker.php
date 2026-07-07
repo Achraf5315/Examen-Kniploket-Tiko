@@ -7,13 +7,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Model voor medewerkers van Kniploket Tiko.
+ *
+ * Koppelt een medewerker aan de bijbehorende gebruiker (login), adres,
+ * behandelingen die zij mogen uitvoeren, werktijden en afspraken.
+ */
 class Medewerker extends TikoModel
 {
     /** @use HasFactory<\Database\Factories\MedewerkerFactory> */
     use HasFactory;
 
+    // De databasetabel gebruikt PascalCase-namen (afwijkend van de Laravel-conventie).
     protected $table = 'Medewerker';
 
+    // Eén-op-één: elke medewerker hoort bij precies één gebruikersaccount.
     public function gebruiker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'GebruikerId', 'Id');
@@ -24,6 +32,7 @@ class Medewerker extends TikoModel
         return $this->belongsTo(Adres::class, 'AdresId', 'Id');
     }
 
+    // Veel-op-veel: welke behandelingen deze medewerker mag uitvoeren.
     public function behandelingen(): BelongsToMany
     {
         return $this->belongsToMany(Behandeling::class, 'MedewerkerPerBehandeling', 'MedewerkerId', 'BehandelingId')

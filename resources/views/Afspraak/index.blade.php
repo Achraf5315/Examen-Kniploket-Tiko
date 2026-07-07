@@ -72,14 +72,19 @@
                                         <div class="inline-flex items-center gap-2">
                                             @if (Route::has('afspraken.edit'))
                                                 <a href="{{ route('afspraken.edit', $afspraak->Id) }}"
-                                                   class="rounded-md bg-amber-500 px-3 py-1.5 font-medium text-white hover:bg-amber-400">
-                                                    Wijzigen
+                                                   class="inline-flex items-center justify-center rounded-md bg-amber-500 p-1.5 text-white hover:bg-amber-400"
+                                                   title="Wijzigen" aria-label="Wijzigen">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                    </svg>
                                                 </a>
                                             @endif
                                             @if (Route::has('afspraken.destroy'))
                                                 <button
                                                     type="button"
-                                                    class="rounded-md bg-red-600 px-3 py-1.5 font-medium text-white hover:bg-red-500"
+                                                    class="inline-flex items-center justify-center rounded-md bg-red-600 p-1.5 text-white hover:bg-red-500"
+                                                    title="Verwijderen" aria-label="Verwijderen"
                                                     data-id="{{ $afspraak->Id }}"
                                                     data-delete-url="{{ route('afspraken.destroy', $afspraak->Id) }}"
                                                     data-klant="{{ $afspraak->KlantNaam }}"
@@ -88,7 +93,12 @@
                                                     data-datumtijd="{{ \Illuminate\Support\Carbon::parse($afspraak->Datum)->format('d-m-Y') }} om {{ substr($afspraak->Starttijd, 0, 5) }}"
                                                     onclick="openDeleteModal(this)"
                                                 >
-                                                    Verwijderen
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                    </svg>
                                                 </button>
                                             @endif
                                         </div>

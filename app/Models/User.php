@@ -12,11 +12,19 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Model voor gebruikersaccounts (login), gekoppeld aan de databasetabel 'Gebruiker'.
+ *
+ * Bevat accessors die de Nederlandse PascalCase-kolommen (Gebruikersnaam, Email,
+ * Wachtwoord) mappen naar de standaard Laravel-authenticatievelden (name, email,
+ * password), zodat de ingebouwde auth-scaffolding zonder aanpassingen werkt.
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    // De databasetabel heet 'Gebruiker' (Nederlands) in plaats van 'users'.
     protected $table = 'Gebruiker';
 
     protected $primaryKey = 'Id';

@@ -105,7 +105,8 @@
                                         <div class="flex items-center justify-center gap-4">
 
                                             <a href="{{ route('bestellingen.edit', $bestelling->Id) }}"
-                                                class="inline-flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
+                                                class="inline-flex items-center justify-center text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                                                title="Wijzigen" aria-label="Wijzigen">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
                                                     fill="none" stroke="currentColor" stroke-width="2"
                                                     stroke-linecap="round" stroke-linejoin="round">
@@ -118,6 +119,7 @@
 
                                             <button type="button"
                                                 class="inline-flex items-center justify-center text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                                                title="Verwijderen" aria-label="Verwijderen"
                                                 @click="openDeleteModal = true">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
                                                     fill="none" stroke="currentColor" stroke-width="2"

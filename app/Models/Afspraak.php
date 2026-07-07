@@ -8,11 +8,18 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Model voor afspraken tussen een klant, medewerker en behandeling.
+ *
+ * Alle CRUD-bewerkingen lopen via stored procedures (exameneis); de
+ * overlapcontrole tussen afspraken gebeurt in de database, niet in PHP.
+ */
 class Afspraak extends TikoModel
 {
     /** @use HasFactory<\Database\Factories\AfspraakFactory> */
     use HasFactory;
 
+    // De databasetabel gebruikt PascalCase-namen (afwijkend van de Laravel-conventie).
     protected $table = 'Afspraak';
 
     public function klant(): BelongsTo

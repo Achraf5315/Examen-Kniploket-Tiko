@@ -19,5 +19,5 @@ BEGIN
     INNER JOIN Medewerker m ON m.Id = a.MedewerkerId
     INNER JOIN Behandeling b ON b.Id = a.BehandelingId
     WHERE a.IsActief = 1
-    ORDER BY a.Datum ASC, a.Starttijd ASC;
+    ORDER BY a.Id DESC;
 END

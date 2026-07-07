@@ -96,24 +96,24 @@
 
                     <div>
                         <p class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">Producten koppelen</p>
-                        <div class="grid grid-cols-1 gap-2 rounded-md border border-gray-200 p-3">
+                        <div class="grid grid-cols-1 gap-2 rounded-md border border-gray-200 dark:border-gray-600 p-3 dark:bg-gray-700">
                             @php
                                 $oudeProducten = old('Producten', []);
                                 $huidigeSelectie = is_array($oudeProducten) ? array_map('intval', $oudeProducten) : [];
                             @endphp
                             @forelse ($producten as $product)
-                                <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
                                     <input
                                         type="checkbox"
                                         name="Producten[]"
                                         value="{{ $product->Id }}"
                                         {{ in_array((int) $product->Id, $huidigeSelectie, true) ? 'checked' : '' }}
-                                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"
+                                        class="rounded border-gray-300 dark:border-gray-500 text-blue-600 shadow-sm focus:ring-blue-500 dark:bg-gray-600"
                                     >
                                     <span>{{ $product->Productnaam }}</span>
                                 </label>
                             @empty
-                                <p class="text-sm text-gray-500">Er zijn geen actieve producten beschikbaar.</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-300">Er zijn geen actieve producten beschikbaar.</p>
                             @endforelse
                         </div>
                         @error('Producten')
