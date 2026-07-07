@@ -144,12 +144,7 @@ class ProductController extends Controller
             ]);
 
 
-            return redirect()
-                ->route('dashboard')
-                ->with(
-                    'error',
-                    'Er is een fout opgetreden bij het laden van producten.'
-                );
+            return [];
         }
     }
 
