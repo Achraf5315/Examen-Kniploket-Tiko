@@ -121,99 +121,102 @@
                         <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                             <tr>
                                 <th class="px-6 py-3 text-left">
-                                    <a href="{{ $sortLink('Productnaam') }}" class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:text-gray-900 dark:hover:text-white">
-                                        Product
+                                    <a href="{{ $sortLink('Productnaam') }}" class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400">
+                                        Productnaam
                                         @if($sortBy === 'Productnaam')
-                                            <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
-                                                <path @if($sortDirection === 'desc') d="M3 9a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" @else d="M3 11a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1zm0-4a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V8a1 1 0 011-1h1z" @endif />
+                                            <svg class="w-4 h-4 {{ $sortDirection === 'asc' ? '' : 'rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                                             </svg>
                                         @endif
                                     </a>
                                 </th>
                                 <th class="px-6 py-3 text-left">
-                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">EAN-Code</span>
+                                    <a href="{{ $sortLink('EanCode') }}" class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400">
+                                        EAN-Code
+                                        @if($sortBy === 'EanCode')
+                                            <svg class="w-4 h-4 {{ $sortDirection === 'asc' ? '' : 'rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                            </svg>
+                                        @endif
+                                    </a>
                                 </th>
                                 <th class="px-6 py-3 text-left">
-                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Categorie</span>
+                                    <a href="{{ $sortLink('categorie_naam') }}" class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400">
+                                        Categorie
+                                        @if($sortBy === 'categorie_naam')
+                                            <svg class="w-4 h-4 {{ $sortDirection === 'asc' ? '' : 'rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                            </svg>
+                                        @endif
+                                    </a>
                                 </th>
                                 <th class="px-6 py-3 text-left">
-                                    <a href="{{ $sortLink('Prijs') }}" class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:text-gray-900 dark:hover:text-white">
+                                    <a href="{{ $sortLink('Prijs') }}" class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400">
                                         Prijs
                                         @if($sortBy === 'Prijs')
-                                            <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
-                                                <path @if($sortDirection === 'desc') d="M3 9a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" @else d="M3 11a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1zm0-4a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V8a1 1 0 011-1h1z" @endif />
+                                            <svg class="w-4 h-4 {{ $sortDirection === 'asc' ? '' : 'rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                                             </svg>
                                         @endif
                                     </a>
                                 </th>
-                                <th class="px-6 py-3 text-center">
-                                    <a href="{{ $sortLink('Voorraad') }}" class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:text-gray-900 dark:hover:text-white">
+                                <th class="px-6 py-3 text-left">
+                                    <a href="{{ $sortLink('Voorraad') }}" class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400">
                                         Voorraad
                                         @if($sortBy === 'Voorraad')
-                                            <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
-                                                <path @if($sortDirection === 'desc') d="M3 9a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" @else d="M3 11a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1v-1a1 1 0 011-1h1zm0-4a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V8a1 1 0 011-1h1z" @endif />
+                                            <svg class="w-4 h-4 {{ $sortDirection === 'asc' ? '' : 'rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                                             </svg>
                                         @endif
                                     </a>
                                 </th>
-                                <th class="px-6 py-3 text-right">
-                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Acties</span>
-                                </th>
+                                <th class="px-6 py-3 text-left">Acties</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
                             @foreach($products as $product)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->Productnaam }}</p>
-                                        @if(!empty($product->Opmerking))
-                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Str::limit($product->Opmerking, 50) }}</p>
-                                        @endif
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                        {{ $product->Productnaam }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300 font-mono text-sm">
+                                        {{ $product->EanCode }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                        {{ $product->categorie_naam }}
+                                    </td>
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                        €{{ number_format($product->Prijs, 2, ',', '.') }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="text-sm text-gray-600 dark:text-gray-400 font-mono">{{ $product->EanCode }}</span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                            {{ $product->categorie_naam }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                            €{{ number_format($product->Prijs, 2, ',', '.') }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
                                         @if($product->Voorraad <= $product->MinimumVoorraad)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
-                                                {{ $product->Voorraad }}
-                                                <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-medium text-red-600 dark:text-red-400">{{ $product->Voorraad }}</span>
+                                                <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                                                 </svg>
-                                            </span>
+                                            </div>
                                         @else
-                                            <span class="text-sm text-gray-600 dark:text-gray-400">{{ $product->Voorraad }}</span>
+                                            <span class="font-medium text-gray-900 dark:text-white">{{ $product->Voorraad }}</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex gap-2 justify-end">
+                                    <td class="px-6 py-4">
+                                        <div class="flex space-x-2">
                                             <a href="{{ route('products.edit', $product->Id) }}" class="inline-flex items-center px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                                 Bewerk
                                             </a>
-                                            <form action="{{ route('products.destroy', $product->Id) }}" method="POST"
-                                                  onsubmit="return confirm('Weet u zeker dat u \'{{ addslashes($product->Productnaam) }}\' wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center px-3 py-1 text-sm bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                    Verwijder
-                                                </button>
-                                            </form>
+                                            <button 
+                                                type="button" 
+                                                class="inline-flex items-center px-3 py-1 text-sm bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                                                onclick="openDeleteModal({{ $product->Id }}, '{{ addslashes($product->Productnaam) }}')">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                Verwijder
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -254,18 +257,16 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="flex space-x-2 pt-2">
+                            <div class="flex gap-2 pt-2">
                                 <a href="{{ route('products.edit', $product->Id) }}" class="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
                                     Bewerk
                                 </a>
-                                <form action="{{ route('products.destroy', $product->Id) }}" method="POST" class="flex-1"
-                                      onsubmit="return confirm('Weet u zeker dat u \'{{ addslashes($product->Productnaam) }}\' wilt verwijderen?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full inline-flex justify-center items-center px-3 py-2 text-sm bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">
-                                        Verwijder
-                                    </button>
-                                </form>
+                                <button 
+                                    type="button" 
+                                    class="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                                    onclick="openDeleteModal({{ $product->Id }}, '{{ addslashes($product->Productnaam) }}')">
+                                    Verwijder
+                                </button>
                             </div>
                         </div>
                     @endforeach
@@ -294,18 +295,80 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full animate-in fade-in zoom-in duration-300">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30">
+                    <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Product verwijderen</h3>
+            </div>
+            <button type="button" onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 space-y-4">
+            <p class="text-gray-600 dark:text-gray-400">
+                Weet u zeker dat u het volgende product wilt verwijderen?
+            </p>
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                <p class="font-medium text-gray-900 dark:text-white break-words" id="productName"></p>
+            </div>
+            <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 border border-red-200 dark:border-red-900/30">
+                <p class="text-sm text-red-800 dark:text-red-300 flex items-start gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <span>Deze actie kan niet ongedaan worden gemaakt.</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg">
+            <button 
+                type="button" 
+                onclick="closeDeleteModal()"
+                class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors font-medium">
+                Annuleren
+            </button>
+            <button 
+                type="button" 
+                onclick="submitDeleteForm()"
+                class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                Ja, verwijderen
+            </button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
 <script>
+    let deleteFormData = {
+        productId: null,
+        productName: null
+    };
+
+    // Flash notifications auto-hide
     document.addEventListener('DOMContentLoaded', function () {
         const notifications = document.querySelectorAll('.js-flash-notification');
 
         notifications.forEach(function (notification) {
-            // Bepaal timeout op basis van type (warning/error = langer, success = korter)
             let timeout = 3000;
             if (notification.classList.contains('bg-yellow-50') || notification.classList.contains('bg-red-50')) {
-                timeout = 8000; // Waarschuwingen en fouten blijven langer zichtbaar
+                timeout = 8000;
             }
 
             window.setTimeout(function () {
@@ -316,6 +379,52 @@
                 }, 300);
             }, timeout);
         });
+    });
+
+    // Delete Modal Functions
+    function openDeleteModal(productId, productName) {
+        deleteFormData.productId = productId;
+        deleteFormData.productName = productName;
+        
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('deleteModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        deleteFormData = { productId: null, productName: null };
+    }
+
+    function submitDeleteForm() {
+        if (deleteFormData.productId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("products.destroy", ":id") }}'.replace(':id', deleteFormData.productId);
+            
+            form.innerHTML = `
+                @csrf
+                @method('DELETE')
+            `;
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('deleteModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeDeleteModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && !document.getElementById('deleteModal').classList.contains('hidden')) {
+            closeDeleteModal();
+        }
     });
 </script>
 @endpush
